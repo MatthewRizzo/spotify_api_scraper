@@ -149,6 +149,7 @@ class WebApp(Scraper, UserManager):
 
         @self._app.route("/playlist_metrics", methods=["GET"])
         def playlist_metrics():
-            self.get_users_playlists(self.current_user.access_token)
+            self.get_users_playlists(current_user.get_access_token())
+            return redirect(url_for("index", title=self._title))
 
 
