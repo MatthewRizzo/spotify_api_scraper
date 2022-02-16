@@ -3,16 +3,17 @@ import json
 import pathlib
 
 
+#------------------------------Project Imports-----------------------------#
+from utils import Utils
+
 class DataParser():
     def __init__(self) -> None:
         self.default_auth_filename = "default_app_auth.json"
         self.expected_auth_filename = "app_auth.json"
 
-        self.src_dir_path = pathlib.Path(__file__).parent.resolve()
-        self.root_dir_path = self.src_dir_path.parent.resolve()
-        self.path_to_data_dir = self.root_dir_path / "data"
-        self.default_auth_path = self.path_to_data_dir / self.default_auth_filename
-        self.expected_auth_path = self.path_to_data_dir / self.expected_auth_filename
+        self.default_auth_path = Utils.get_data_dir_path() / self.default_auth_filename
+        self.expected_auth_path = Utils.get_data_dir_path() / self.expected_auth_filename
+
         if self._check_if_auth_file_exists():
             pass
 
@@ -33,3 +34,4 @@ class DataParser():
 
 if __name__ == "__main__":
     data_parser = DataParser()
+    print(data_parser.get_auth_info())
