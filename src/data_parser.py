@@ -1,6 +1,6 @@
+#------------------------------STANDARD DEPENDENCIES-----------------------------#
 import json
 import pathlib
-import os
 
 
 class DataParser():

@@ -1,8 +1,8 @@
-# -------- Standard Imports
+#------------------------------STANDARD DEPENDENCIES-----------------------------#
 from argparse import *
 import webbrowser
 
-# -------- Project Imports
+#------------------------------Project Imports-----------------------------#
 from parse_manager import ParseManager
 from scraper import Scraper
 from data_parser import DataParser
