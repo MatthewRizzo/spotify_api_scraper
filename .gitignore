@@ -1,5 +1,8 @@
-# Data / secrete specific excludes
+# Data / secret specific excludes
 data/app_auth.json
+
+# Venv related excludes
+Spotify-api-scrapper-venv/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

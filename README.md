@@ -8,7 +8,7 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
   *
 
 
-## Setup Notes:
+## Setup Guide
 1. This scrapper requires your Spotify account to have access to the Developer API's
   * To do this, sign up for an app as directed here: https://developer.spotify.com/documentation/general/guides/authorization/app-settings/
   * **Create an application** - https://developer.spotify.com/dashboard/applications
@@ -20,3 +20,9 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
       2. client_id = client id of your new registered application
 3. Run the install script at [install/install.sh](install/install.sh)
 4.
+
+
+## Running the program
+* Note: before running, please ensure the virtual environment is created as described in [Setup Guide](#setup-guide)
+    * Whenever the program is run, it should be from the virtual environment python within [Spotify-api-scrapper-venv/bin/python](Spotify-api-scrapper-venv/bin/python)
+  * This is automatically handled by the [start script](start.sh)
