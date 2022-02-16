@@ -56,12 +56,25 @@ class DataManager():
     def get_users_access_token(self, user_id) -> Optional[int]:
         """Gets the user's access token.
         :return int if access token found, None otherwise"""
-        with open(pathlib.Path(self.expected_user_data_path), 'r') as user_file:
-            data_json = json.load(user_file)
-            if user_id in data_json:
-                return data_json[user_id]['access_token']
-            else:
-                return None
+        user_dict = self._get_user_dict(user_id)
+        if user_dict is not None:
+            return user_dict['access_token']
+        else:
+            return None
+
+    def _is_token_valid(self, user_id) -> bool:
+        """Given a user'is id, determines if their token is invalid.
+        :Return True if expired, False otherwise."""
+        user_dict = self._get_user_dict(user_id)
+        token_expire_time_formatted = user_dict['valid_until']
+        expire_time = datetime.strptime(token_expire_time_formatted, "%m/%d/%Y %H:%M:%S")
+
+        present = datetime.now()
+        if present > expire_time:
+            return False
+        else:
+            return True
+
 
     def _check_if_auth_file_exists(self) -> bool:
         """Ensures the non-default auth file was created properly.
@@ -79,6 +92,14 @@ class DataManager():
             print("creating user file")
             with io.open(self.expected_user_data_path, 'w') as user_file:
                 user_file.write(json.dumps({}))
+
+    def _get_user_dict(self, user_id) -> dict:
+        with open(pathlib.Path(self.expected_user_data_path), 'r') as user_file:
+            data_json = json.load(user_file)
+            if user_id in data_json:
+                return data_json[user_id]
+            else:
+                return None
 
 if __name__ == "__main__":
     data_parser = DataManager()

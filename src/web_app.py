@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 import flask
 from flask import Flask, session, render_template, request, redirect, flash, url_for, jsonify
-from flask_login import login_required
+from flask_login import current_user, login_required, login_user, logout_user
 import werkzeug.serving  # needed to make production worthy app that's secure
 import secrets
 import logging
@@ -36,7 +36,6 @@ class WebApp(Scraper, UserManager):
         # user_auth_code - An authorization code that can be exchanged for an Access Token.
         # https: // developer.spotify.com/documentation/general/guides/authorization/code-flow/
         self.user_auth_code = None # set during authorization
-        self.current_user = None
 
         # Set the static and tempalte dir
         self._app.static_folder = str(Utils.get_static_dir_path())
@@ -83,12 +82,15 @@ class WebApp(Scraper, UserManager):
 
     def create_homepage(self):
         @self._app.route("/", methods=["GET"])
+        @login_required
         def index():
-            # TODO: use current user to get access_token
-            have_token = 0
-            if self.current_user is not None:
-                have_token = 1 if self.current_user.has_valid_user_token() else 0
-            return render_template("homepage.html", title=self._title, have_access_token=have_token)
+            return render_template("homepage.html", title=self._title)
+
+        @self._app.route("/logout", methods=["GET"])
+        @login_required
+        def logout():
+            logout_user()
+            return redirect(url_for("index", title=self._title))
 
     def create_response_uri_pages(self):
         """Used to make all routes REQUIRED by spotify to receive responses"""
@@ -128,21 +130,25 @@ class WebApp(Scraper, UserManager):
             self._data_manager.save_users_access_token(
                 access_token, user_id, end_valid_time)
 
-            self.current_user = User(user_id, access_token)
-            return redirect(url_for("index", title=self._title, have_access_token=1))
+            user = User(user_id, access_token)
+            login_user(user)
+            return redirect(url_for("index", title=self._title))
 
     def create_api_routes(self):
         @self._app.route("/spotify_authorize", methods=["GET", "POST"])
         def spotify_authorize():
             # only auth if needed
             # TODO: add OR for when token is expired
-            if self.current_user is None:
+            if not current_user.is_authenticated:
                 self._auth_redirect_uri = self.base_route + url_for('redirect_after_auth')
 
                 auth_url = self.get_authenticate_url(self._auth_info['client_id'], self._auth_redirect_uri)
                 return redirect(auth_url)
             else:
-                return redirect(url_for("index", title=self._title, have_access_token=1))
+                return redirect(url_for("index", title=self._title))
 
+        @self._app.route("/playlist_metrics", methods=["GET"])
+        def playlist_metrics():
+            self.get_users_playlists(self.current_user.access_token)
 
 

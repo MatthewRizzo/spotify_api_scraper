@@ -46,10 +46,10 @@ class UserManager(LoginManager):
             """
             access_token = self.data_manager.get_users_access_token(user_id)
             # If the access token is None, user is not registered, be sure to log them in
-            # if access_token is None:
-            #     redirect(url_for("spotify_authorize"))
-            print("user loaded")
+            if access_token is None or not self.data_manager._is_token_valid(user_id):
+                redirect(url_for("spotify_authorize"))
             return User(user_id, access_token)
+
 
         @self.unauthorized_handler
         def onNeedToLogIn():

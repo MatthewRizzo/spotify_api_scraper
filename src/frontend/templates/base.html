@@ -30,18 +30,27 @@
                 <!-- left side of navbar-->
                 <div class="navbar-menu">
                     <div class="navbar-start">
+                        {% if current_user.is_authenticated %}
                         <div class="navbar-item">
                             <div class="buttons">
-                            <a href="{{ url_for('index') }}" class="button is-link">
+                                <a href="{{ url_for('logout') }}" class="button is-link">
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                        <div class="navbar-item">
+                            <div class="buttons">
+                            <a href="{{ url_for('playlist_metrics') }}" class="button is-link">
                                 Playlist Metrics
                             </a>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
 
                 <!-- right side of navbar-->
                 <div class="navbar-end">
-                    {% if have_access_token == 0 %}
+                    {% if not current_user.is_authenticated %}
                     <div class="navbar-item">
                         <div class="buttons">
                             <a href="{{ url_for('spotify_authorize') }}" class="button is-link">
@@ -51,7 +60,6 @@
                     </div>
                     {% endif %}
                 </div>
-
             </nav>
         </div>
         <div class="hero-body">

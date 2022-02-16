@@ -1,6 +1,6 @@
 #------------------------------STANDARD DEPENDENCIES-----------------------------#
 import requests
-from typing import Optional, Dict
+from typing import List, Optional, Dict
 from flask import url_for
 import requests
 import base64
@@ -84,6 +84,18 @@ class Scraper():
         raw_res = get_req.json()
         return str(raw_res['id'])
 
+
+    def get_users_playlists(self, access_token) -> List:
+        """Given the current authenticated user, get their playlists"""
+        # https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-list-of-current-users-playlists
+        req_url = "https://api.spotify.com/v1/me/playlists"
+        header = {'Authorization': "Bearer " + access_token,
+                  "Content-Type": "application/json"}
+
+        # Get the id's of the playlists owned by the user
+        get_playlist_ids_res = requests.get(req_url, headers=header).json()
+        print(get_playlist_ids_res)
+        return get_playlist_ids_res
 
     def refresh_access_token(self):
         # TODO: not sure if it is needed in the context of this app

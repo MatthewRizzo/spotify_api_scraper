@@ -27,3 +27,4 @@ class User(UserMixin):
         # TODO: make a check to see if it is still valid
         return self.access_token is not None
 
+
