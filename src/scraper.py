@@ -6,6 +6,7 @@ import requests
 import base64
 import random
 
+
 #------------------------------Project Imports-----------------------------#
 from utils import Utils
 
@@ -89,18 +90,37 @@ class Scraper():
         """Given the current authenticated user, get their playlists"""
         # https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-list-of-current-users-playlists
         req_url = "https://api.spotify.com/v1/me/playlists"
+
+        # represents everything after 'items':
+        playlists = {}
+
+        # hard coded into the api
+        max_num_playlists = 50
+        total_num_received = 0
+
+        params = {'limit': max_num_playlists,
+                  'offset': 0}
         header = {'Authorization': "Bearer " + access_token,
                   "Content-Type": "application/json"}
-
         # Get the id's of the playlists owned by the user
-        get_playlist_ids_res = requests.get(req_url, headers=header).json()
-        print(get_playlist_ids_res['items'])
-        for item in get_playlist_ids_res['items']:
-            print(item)
-        print("-----------------------------")
-        for item in get_playlist_ids_res['items']:
-            print("{}: {}\n".format(item["name"], item['description']))
-        return get_playlist_ids_res
+        get_playlist_ids_res = requests.get(req_url, params=params, headers=header).json()
+
+        keep_going = True
+
+        # Keep requesting the max number of playlists until all have been found. keep adding to dict
+        while total_num_received < get_playlist_ids_res['total']:
+            num_new_playlists = 0
+            for new_playlist in get_playlist_ids_res['items']:
+                playlists[new_playlist['id']] = new_playlist
+                num_new_playlists += 1
+
+            # adjust the offset in the params
+            total_num_received += num_new_playlists
+            params['offset'] = total_num_received
+
+            get_playlist_ids_res = requests.get(
+                req_url, params=params, headers=header).json()
+        return playlists
 
     def refresh_access_token(self):
         # TODO: not sure if it is needed in the context of this app

@@ -50,13 +50,13 @@ def create_playlist_search_cells(raw_res_dict: Dict) -> List[PlaylistSearchCell]
     """Given the raw results of a serach, generates a list of PlaylistSearchCell objects.
     Can be used to create a PlaylistSearchTable object"""
     search_res = []
-    if len(raw_res_dict["items"]) is not None:
+    if len(raw_res_dict) is not None:
         # Keep adding to the search results list with cell objects
         # Will ad-hoc generate a table on the webpage with all the results
-        for playlist in raw_res_dict["items"]:
+        for playlist_key, playlist_val in raw_res_dict.items():
             search_res.append(
-                PlaylistSearchCell(playlist['name'],
-                                   playlist['id'],
-                                   playlist['description'])
+                PlaylistSearchCell(playlist_val['name'],
+                                   playlist_val['id'],
+                                   playlist_val['description'])
             )
     return search_res
