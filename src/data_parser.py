@@ -18,7 +18,6 @@ class DataParser():
             pass
 
     def get_auth_info(self) -> dict:
-        print(f"self.expected_auth_path = {self.expected_auth_path}")
         with open(str(self.expected_auth_path)) as auth_file:
             return json.load(auth_file)
 

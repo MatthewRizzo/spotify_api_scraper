@@ -3,17 +3,24 @@ from argparse import *
 import webbrowser
 
 #------------------------------Project Imports-----------------------------#
-from parse_manager import ParseManager
+from cli_parser import CLIParser
 from scraper import Scraper
 from data_parser import DataParser
+from web_app import WebApp
 
 class Main():
-    def __init__(self, args: dict) -> None:
+    def __init__(self, cli_args: dict) -> None:
         """
         Args:
             args (dict): Values after parsing the CLI inputs for this program
         """
+        self.args = cli_args
         self.data_parser = DataParser()
+
+        self.app = WebApp(
+            port = cli_args['port'],
+            is_debug=cli_args['debugMode'],
+            secret_key = self.data_parser.get_auth_info()['client_secret'])
 
     def authenticate_user(self):
         """Login/authenticate the user"""
@@ -29,15 +36,14 @@ class Main():
         url += redirect_uri_param_str
         url += "&"
         url += response_type_param_str
-        auth_page = webbrowser.open(url)
 
 
 
 if __name__ == "__main__":
-    parser = ParseManager()
-    args = parser.args
+    cli_parser = CLIParser()
+    cli_args = cli_parser.args
 
-    main = Main(args)
+    main = Main(cli_args)
     main.authenticate_user()
 
 
