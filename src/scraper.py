@@ -94,7 +94,12 @@ class Scraper():
 
         # Get the id's of the playlists owned by the user
         get_playlist_ids_res = requests.get(req_url, headers=header).json()
-        print(get_playlist_ids_res)
+        print(get_playlist_ids_res['items'])
+        for item in get_playlist_ids_res['items']:
+            print(item)
+        print("-----------------------------")
+        for item in get_playlist_ids_res['items']:
+            print("{}: {}\n".format(item["name"], item['description']))
         return get_playlist_ids_res
 
     def refresh_access_token(self):

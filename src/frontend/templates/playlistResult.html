@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+<body>
+
+    {% block content %}
+    {{ playlist_table }}
+
+    <div class="buttons is-centered">
+        <a href="{{ url_for('index') }}" class="button is-link">
+            Return to Main Menu
+        </a>
+    </div>
+    {% endblock %}
+</body>

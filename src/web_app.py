@@ -15,7 +15,7 @@ from scraper import Scraper
 from user_manager import UserManager
 from data_manager import DataManager
 from user import User
-
+from backend_utils.playlist_search_table import PlaylistSearchTable, PlaylistSearchCell, create_playlist_search_cells
 
 class WebApp(Scraper, UserManager):
     def __init__(self, port: int, is_debug: bool, data_manager: DataManager):
@@ -149,7 +149,22 @@ class WebApp(Scraper, UserManager):
 
         @self._app.route("/playlist_metrics", methods=["GET"])
         def playlist_metrics():
-            self.get_users_playlists(current_user.get_access_token())
-            return redirect(url_for("index", title=self._title))
+            user_playlists_dict = self.get_users_playlists(current_user.get_access_token())
+            # return redirect(url_for("index", title=self._title))
+            playlist_search_cell_list = create_playlist_search_cells(user_playlists_dict)
+            playlist_table = PlaylistSearchTable(playlist_search_cell_list)
+            return render_template("playlistResult.html",
+                                   title=self._title,
+                                   playlist_table=playlist_table)
 
+        @self._app.route("/analyze_playlist/genre/<string:playlist_id>", methods=["GET"])
+        def analyze_playlist_genre(playlist_id: str):
+            # TODO: actually do this
+            return render_template("index.html",
+                                   title=self._title)
 
+        @self._app.route("/analyze_playlist/artists/<string:playlist_id>", methods=["GET"])
+        def analyze_playlist_artists(playlist_id: str):
+            # TODO: actually do this
+            return render_template("index.html",
+                                   title=self._title)
