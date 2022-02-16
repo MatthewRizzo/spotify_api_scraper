@@ -18,4 +18,5 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
    2. Replace the default values with those associated with your Application
       1. see: https://developer.spotify.com/documentation/general/guides/authorization/code-flow/
       2. client_id = client id of your new registered application
-3.
+3. Run the install script at [install/install.sh](install/install.sh)
+4.
