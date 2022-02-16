@@ -16,6 +16,11 @@ class DataParser():
         if self._check_if_auth_file_exists():
             pass
 
+    def get_auth_info(self) -> dict:
+        print(f"self.expected_auth_path = {self.expected_auth_path}")
+        with open(str(self.expected_auth_path)) as auth_file:
+            return json.load(auth_file)
+
     def _check_if_auth_file_exists(self) -> bool:
         """Ensures the non-default auth file was created properly.
         :return True if it exists"""
