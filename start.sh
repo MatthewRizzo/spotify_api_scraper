@@ -24,7 +24,8 @@ ARGS=$@
 
 # check if venv is setup, if not inform user to run install
 if [[ -f ${venvPath} ]]; then
-    echo "Using virtual environment ${venvPath}"
+    # echo "Using virtual environment ${venvPath}"
+    echo -n ""
 else
     echo "Virtual environment not setup. Run ${setupScript}"
     exit
