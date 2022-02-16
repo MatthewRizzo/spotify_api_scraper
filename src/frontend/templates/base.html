@@ -41,6 +41,7 @@
 
                 <!-- right side of navbar-->
                 <div class="navbar-end">
+                    {% if have_access_token == 0 %}
                     <div class="navbar-item">
                         <div class="buttons">
                             <a href="{{ url_for('spotify_authorize') }}" class="button is-link">
@@ -48,6 +49,7 @@
                             </a>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
 
             </nav>

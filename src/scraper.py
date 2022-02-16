@@ -73,3 +73,18 @@ class Scraper():
         valid_for_sec = access_token_res_dict['expires_in']
         print(f"token {access_token} is valid for {valid_for_sec} seconds")
         return access_token_res_dict
+
+    def get_user_id(self, access_token) -> str:
+        """Given an access token, get the user's id
+        \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-current-users-profile """
+        user_profile_url = "https://api.spotify.com/v1/me"
+        header = {"Authorization": "Bearer " + access_token,
+                  "Content-Type": "application/json"}
+        get_req = requests.get(user_profile_url, headers=header)
+        raw_res = get_req.json()
+        return str(raw_res['id'])
+
+
+    def refresh_access_token(self):
+        # TODO: not sure if it is needed in the context of this app
+        pass

@@ -14,6 +14,7 @@ from flask_login import LoginManager
 
 #--------------------------------OUR DEPENDENCIES--------------------------------#
 from user import User
+from data_manager import DataManager
 
 
 class UserManager(LoginManager):
@@ -25,6 +26,7 @@ class UserManager(LoginManager):
 
         # create login manager object
         LoginManager.__init__(self, self.flaskApp)
+        self.data_manager = DataManager()
 
         self.createLoginManager()
 
@@ -42,7 +44,12 @@ class UserManager(LoginManager):
                 \n@Param: user_id - The user's unique token id
                 \n@Return: Reference to the User class related to this userToken
             """
-            return User(user_id)
+            access_token = self.data_manager.get_users_access_token(user_id)
+            # If the access token is None, user is not registered, be sure to log them in
+            # if access_token is None:
+            #     redirect(url_for("spotify_authorize"))
+            print("user loaded")
+            return User(user_id, access_token)
 
         @self.unauthorized_handler
         def onNeedToLogIn():

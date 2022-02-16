@@ -9,10 +9,12 @@
 <body>
     {% block content %}
 
-    {% if have_access_token==true %}
-    <div id="is-authed">User Authenticated!</div>
+    {% if have_access_token == 1 %}
+        <div id="is-authed">User Authenticated!</div>
+    {% else %}
+        <div id="not-authed">User Not Authenticated!</div>
     {% endif %}
-    <div id="not-authed">User Not Authenticated!</div>
+
 
     {% endblock %}
 </body>

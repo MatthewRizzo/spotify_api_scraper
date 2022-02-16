@@ -1,5 +1,6 @@
 # Data / secret specific excludes
 data/app_auth.json
+data/user_info.json
 
 # Venv related excludes
 Spotify-api-scrapper-venv/
