@@ -4,6 +4,8 @@ from flask import Flask, session, render_template, request, redirect, flash, url
 import werkzeug.serving  # needed to make production worthy app that's secure
 import secrets
 import logging
+import requests
+import base64
 
 #------------------------------Project Imports-----------------------------#
 from utils import Utils
@@ -79,22 +81,33 @@ class WebApp(Scraper, UserManager):
 
     def create_response_uri_pages(self):
         """Used to make all routes REQUIRED by spotify to receive responses"""
-        @self._app.route("/redirect_after_auth", methods=["GET", "POST"])
+        @self._app.route("/redirect_after_auth", methods=["GET"])
         def redirect_after_auth():
             # part of this auth flow:
-            # https: // developer.spotify.com/documentation/general/guides/authorization/code-flow/
+            # https://developer.spotify.com/documentation/general/guides/authorization/code-flow/
             self.user_auth_code = request.args.get('code')
-            print(self.user_auth_code)
+            state = request.args.get('state')
 
+            # TODO: get this to work
+            # Stop the flow if the state does not match the input state
+            # if self._auth_state_input == state:
+
+            # else:
+            #     print("State variable's do not match....XCF in progress. Ending it.")
             # Can now ask for the Request Access Token
+            self._access_token_dict = self.get_access_token(self.user_auth_code,
+                                                      self._auth_info['client_id'],
+                                                      self._auth_info['client_secret'],
+                                                      self._auth_redirect_uri)
+            self._access_token = self._access_token_dict['access_token']
             return redirect(url_for("index"))
 
     def create_api_routes(self):
         @self._app.route("/spotify_authorize", methods=["GET", "POST"])
         def spotify_authorize():
-            redirect_uri = self.base_route + url_for('redirect_after_auth')
+            self._auth_redirect_uri = self.base_route + url_for('redirect_after_auth')
 
-            auth_url = self.get_authenticate_url(self._auth_info['client_id'], redirect_uri)
+            auth_url = self.get_authenticate_url(self._auth_info['client_id'], self._auth_redirect_uri)
             return redirect(auth_url)
 
 

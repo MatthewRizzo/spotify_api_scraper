@@ -12,6 +12,10 @@ class Utils():
     static_dir_path = pathlib.Path(frontend_dir_path / "static")
     templates_dir_path = pathlib.Path(frontend_dir_path / "templates")
 
+    # url related stuff
+    base_spotify_uri = "https://api.spotify.com"
+    base_spotify_accounts_uri = 'https://accounts.spotify.com'
+
     @classmethod
     def get_src_dir_path(cls) -> pathlib.Path:
         return cls.src_dir_path
@@ -35,3 +39,14 @@ class Utils():
     @classmethod
     def get_templates_dir_path(cls) -> pathlib.Path:
         return cls.templates_dir_path
+
+    @classmethod
+    def get_base_spotify_api_uri(cls) -> pathlib.Path:
+        return cls.base_spotify_uri
+
+    @classmethod
+    def get_base_spotify_accounts_uri(cls) -> pathlib.Path:
+        return cls.base_spotify_accounts_uri
+
+
+
