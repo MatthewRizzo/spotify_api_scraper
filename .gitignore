@@ -1,3 +1,6 @@
+# Data / secrete specific excludes
+data/app_auth.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
