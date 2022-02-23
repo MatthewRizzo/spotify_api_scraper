@@ -165,11 +165,34 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             # TODO: actually do this
             track_list, playlist_name = self.get_songs_from_playlist(playlist_id, current_user.get_access_token())
             print(f"playlist name = {playlist_name}")
+            processed_track_dict = {
+                "artist_track_count": dict(),
+                "album_count": dict()
+            }
             for raw_track in track_list:
                 processed_track = self.parse_raw_track(raw_track)
+                cur_track = processed_track['track_name']
+                cur_album = "Undefined" if processed_track['album'] == " " else processed_track['album']
+                cur_artist = processed_track['artists'][0]
                 print("Track {} by {} from their {} album".format(
-                    processed_track['track_name'], processed_track['artists'][0],
-                    processed_track['album']
+                    cur_track, cur_artist, cur_album
                 ))
+
+                # do metric calc for each artist and album
+                cur_num_tracks_by_artist = processed_track_dict["artist_track_count"].get(cur_artist, 0)
+                cur_num_tracks_by_artist += 1
+                processed_track_dict["artist_track_count"][cur_artist] = cur_num_tracks_by_artist
+
+                cur_num_tracks_in_album = processed_track_dict["album_count"].get(cur_album, 0)
+                cur_num_tracks_in_album += 1
+                processed_track_dict["album_count"][cur_album] = cur_num_tracks_in_album
+
+            print("\n\nDone processing:")
+            for artist in processed_track_dict["artist_track_count"]:
+                print("artist {} has {} tracks in this playlist".format(
+                    artist, processed_track_dict["artist_track_count"][artist]))
+            for album in processed_track_dict["album_count"]:
+                print("album {} has {} tracks in this playlist".format(
+                    album, processed_track_dict["album_count"][album]))
 
             return redirect(url_for("index", title=self._title))

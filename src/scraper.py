@@ -160,10 +160,12 @@ class Scraper():
     def parse_raw_track(self, raw_track) -> dict:
         """Given a track from the get-track API, returns just the information we care about
         \n:param raw_track - the rest from the get-track API call
-        \n:return Dict with keys: <track_name, album, artist(s)>.
+        \n:return Dict that maps track_name to other info:
+            keys: {track_id: { track_name, album, artist(s) } }.
             Note: artists and genres will be lists, but will mostly be of length 1
         \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track"""
         res_dict = {}
+        res_dict["track_id"] = raw_track["id"]
         # print(raw_track)
         res_dict['track_name'] = raw_track['name']
         res_dict['album'] = raw_track['album']['name']
@@ -173,7 +175,6 @@ class Scraper():
             res_dict['artists'].append(artist_dict['name'])
 
         return res_dict
-
 
 
     def refresh_access_token(self):
