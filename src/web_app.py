@@ -155,13 +155,13 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                    title=self._title,
                                    playlist_table=playlist_table)
 
-        @self._app.route("/analyze_playlist/genre/<string:playlist_id>", methods=["GET"])
+        @self._app.route("/analyze_playlist/genre/<string:playlist_id>", methods=["POST"])
         def analyze_playlist_genre(playlist_id: str):
             # TODO: actually do this
             return render_template("index.html",
                                    title=self._title)
 
-        @self._app.route("/analyze_playlist/artists/<string:playlist_id>", methods=["GET"])
+        @self._app.route("/analyze_playlist/artists/<string:playlist_id>", methods=["POST"])
         def analyze_playlist_artists(playlist_id: str):
             # TODO: actually do this
             return render_template("index.html",
