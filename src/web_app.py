@@ -1,5 +1,6 @@
 #-----------------------------3RD PARTY DEPENDENCIES-----------------------------#
 from datetime import datetime, timedelta
+import json
 import flask
 from flask import Flask, session, render_template, request, redirect, flash, url_for, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
@@ -75,6 +76,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         self.create_homepage()
         self.create_api_routes()
         self.create_response_uri_pages()
+        self.create_processed_data_pages()
 
         self.base_route = f"http://localhost:{self._port}"
 
@@ -167,10 +169,13 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             print(f"playlist name = {playlist_name}")
             processed_track_dict = {
                 "artist_track_count": dict(),
-                "album_count": dict()
+                "album_count": dict(),
+                "total_track_count": 0
             }
             for raw_track in track_list:
                 processed_track = self.parse_raw_track(raw_track)
+                processed_track_dict["total_track_count"] += 1
+
                 cur_track = processed_track['track_name']
                 cur_album = "Undefined" if processed_track['album'] == " " else processed_track['album']
                 cur_artist = processed_track['artists'][0]
@@ -179,6 +184,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 ))
 
                 # do metric calc for each artist and album
+                # TODO: better handle features
                 cur_num_tracks_by_artist = processed_track_dict["artist_track_count"].get(cur_artist, 0)
                 cur_num_tracks_by_artist += 1
                 processed_track_dict["artist_track_count"][cur_artist] = cur_num_tracks_by_artist
@@ -195,4 +201,29 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 print("album {} has {} tracks in this playlist".format(
                     album, processed_track_dict["album_count"][album]))
 
-            return redirect(url_for("index", title=self._title))
+            # Get the counts as ratio to total number of tracks
+            chart_data_artist = {}
+            for artist, track_count in processed_track_dict["artist_track_count"].items():
+                prop = 100 * track_count / processed_track_dict["total_track_count"]
+                rounded_prop = float("{:.2f}".format(prop))
+                chart_data_artist[artist] = rounded_prop
+
+            return redirect(url_for("show_playlist_by_artist_analysis",
+                                data=chart_data_artist))
+
+    def create_processed_data_pages(self):
+        @self._app.route("/charts/playlist_by_artist_analysis", methods=["GET"])
+        def show_playlist_by_artist_analysis():
+            """:param data is a dictionary that contains the processed metrics"""
+            full_data = request.args.to_dict()
+            input_data = str(full_data["data"]).replace("\'", "\"")
+            input_data = {} if input_data is None else input_data
+            input_data = json.loads(input_data)
+
+            # First entry in dictionary MUST be the column names
+            data = {'Artist': 'Percentage of Playlist'}
+            data.update(input_data)
+
+            print(data.items())
+            return render_template("playlist-artist-pie-chart.html",
+                            title=self._title, data=data)

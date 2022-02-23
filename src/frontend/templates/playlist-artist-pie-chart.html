@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="../static/images/music-symbol.png">
+    <title>{{ title }}</title>
+
+
+    <script type="text/javascript">
+        google.charts.load("current", { packages: ["corechart"] });
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                {% for key, value in data.items() %}
+                    {% if value is string %}
+                    ['{{ key }}', '{{ value }}'],
+                    {% else %}
+                    ['{{ key }}', {{ value }}],
+                    {% endif %}
+                {% endfor %}
+            ]);
+
+        var options = {
+            title: 'Playlist Breakdown By Artist',
+            is3D: false,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('playlist_by_artist_piechart'));
+        chart.draw(data, options);
+      };
+    </script>
+
+</head>
+
+<body>
+    {% for key, value in data.items() %}
+        {{key}}: {{value}}
+    {% endfor %}
+    <div style="margin: 10px 0 0 10px;width: 1000px">
+        <h3>Result of Breaking Down a Playlist by Artist:</h3>
+
+        <div id="playlist_by_artist_piechart" style="width: 900px; height: 500px;"></div>
+    </div>
+</body>
+
+{% endblock %}
+
+</html>

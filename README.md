@@ -8,7 +8,7 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
   * Breakadown playlist by albums
 * BETTER way to timeout token for user
 * Add the image of each playlist to the playlist table
-
+* better handle when track has feat artists
 
 ## Setup Guide
 1. This scrapper requires your Spotify account to have access to the Developer API's
