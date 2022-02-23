@@ -59,4 +59,6 @@ def create_playlist_search_cells(raw_res_dict: Dict) -> List[PlaylistSearchCell]
                                    playlist_val['id'],
                                    playlist_val['description'])
             )
+
+        search_res.sort(key=lambda cell: cell.playlist_name)
     return search_res

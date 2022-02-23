@@ -8,7 +8,6 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
   * Breakadown playlist by albums
 * BETTER way to timeout token for user
 * Add the image of each playlist to the playlist table
-* Sort the playlist names before making the table
 
 
 ## Setup Guide
