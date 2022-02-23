@@ -21,11 +21,12 @@ from backend_utils.flask_utils import FlaskUtils
 
 
 class WebApp(Scraper, UserManager, FlaskUtils):
-    def __init__(self, port: int, is_debug: bool, data_manager: DataManager):
+    def __init__(self, port: int, is_debug: bool, data_manager: DataManager, is_verbose: bool):
 
         self._title = "Spotify API Scraper Parser"
         self._app = Flask(self._title)
         self._data_manager = data_manager
+        self._is_verbose = is_verbose
 
         # Create the user manager with a link to the app itself
         UserManager.__init__(self, self._app)
@@ -166,7 +167,10 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         def analyze_playlist_artists(playlist_id: str):
             # TODO: actually do this
             track_list, playlist_name = self.get_songs_from_playlist(playlist_id, current_user.get_access_token())
-            print(f"playlist name = {playlist_name}")
+
+            if self._is_verbose:
+                print(f"playlist name = {playlist_name}")
+
             processed_track_dict = {
                 "artist_track_count": dict(),
                 "album_count": dict(),
@@ -179,9 +183,10 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 cur_track = processed_track['track_name']
                 cur_album = "Undefined" if processed_track['album'] == " " else processed_track['album']
                 cur_artist = processed_track['artists'][0]
-                print("Track {} by {} from their {} album".format(
-                    cur_track, cur_artist, cur_album
-                ))
+                if self._is_verbose:
+                    print("Track {} by {} from their {} album".format(
+                        cur_track, cur_artist, cur_album
+                    ))
 
                 # do metric calc for each artist and album
                 # TODO: better handle features
@@ -193,13 +198,14 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 cur_num_tracks_in_album += 1
                 processed_track_dict["album_count"][cur_album] = cur_num_tracks_in_album
 
-            print("\n\nDone processing:")
-            for artist in processed_track_dict["artist_track_count"]:
-                print("artist {} has {} tracks in this playlist".format(
-                    artist, processed_track_dict["artist_track_count"][artist]))
-            for album in processed_track_dict["album_count"]:
-                print("album {} has {} tracks in this playlist".format(
-                    album, processed_track_dict["album_count"][album]))
+            if self._is_verbose:
+                print("\n\nDone processing Playlist:")
+                for artist in processed_track_dict["artist_track_count"]:
+                    print("artist {} has {} tracks in this playlist".format(
+                        artist, processed_track_dict["artist_track_count"][artist]))
+                for album in processed_track_dict["album_count"]:
+                    print("album {} has {} tracks in this playlist".format(
+                        album, processed_track_dict["album_count"][album]))
 
             # Get the counts as ratio to total number of tracks
             chart_data_artist = {}
@@ -224,6 +230,5 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             data = {'Artist': 'Percentage of Playlist'}
             data.update(input_data)
 
-            print(data.items())
             return render_template("playlist-artist-pie-chart.html",
                             title=self._title, data=data)

@@ -39,3 +39,11 @@ class CLIParser():
             help="Dont use debug mode for production environments",
             default=True
         )
+
+        self.parser.add_argument(
+            "-v", "--verbose",
+            action="store_true",
+            default=False,
+            dest="verbose",
+            help="Set this flag to have more information get printed"
+        )
