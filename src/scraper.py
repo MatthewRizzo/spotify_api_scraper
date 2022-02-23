@@ -1,8 +1,7 @@
 #------------------------------STANDARD DEPENDENCIES-----------------------------#
 import requests
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 from flask import url_for
-import requests
 import base64
 import random
 
@@ -121,6 +120,61 @@ class Scraper():
             get_playlist_ids_res = requests.get(
                 req_url, params=params, headers=header).json()
         return playlists
+
+    def get_songs_from_playlist(self, playlist_id: str, access_token : str
+                                ) -> Tuple[List, str]:
+        """Given a playlist id, grabs all of the songs from the playlist
+        \n:return Tuple of (unprocessed list of tracks, playlist_name)
+        \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlist
+        \n:docs for return "tracks" - https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track
+        """
+
+        tracks_in_playlist = []
+        next_url = None
+        more_tracks = True
+        playlist_name = None
+
+        req_url = f"https://api.spotify.com/v1/playlists/{playlist_id}"
+        header = {'Authorization': "Bearer " + access_token,
+                  "Content-Type": "application/json"}
+
+        # Keep grabbing tracks from the playlist until return says there are no more
+        while more_tracks:
+            req = requests.get(req_url, headers=header).json()
+            next_url = req['tracks']['next']
+            more_tracks = False if next_url is None else True
+
+            track_list = req['tracks']['items']
+
+            # see https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track
+            # for description of what each track looks like
+            for track in track_list:
+                tracks_in_playlist.append(track['track'])
+
+            if playlist_name is None:
+                playlist_name = req['name']
+
+        return (tracks_in_playlist, playlist_name)
+
+
+    def parse_raw_track(self, raw_track) -> dict:
+        """Given a track from the get-track API, returns just the information we care about
+        \n:param raw_track - the rest from the get-track API call
+        \n:return Dict with keys: <track_name, album, artist(s)>.
+            Note: artists and genres will be lists, but will mostly be of length 1
+        \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track"""
+        res_dict = {}
+        # print(raw_track)
+        res_dict['track_name'] = raw_track['name']
+        res_dict['album'] = raw_track['album']['name']
+        res_dict['artists'] = []
+
+        for artist_dict in raw_track['artists']:
+            res_dict['artists'].append(artist_dict['name'])
+
+        return res_dict
+
+
 
     def refresh_access_token(self):
         # TODO: not sure if it is needed in the context of this app

@@ -158,11 +158,18 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         @self._app.route("/analyze_playlist/genre/<string:playlist_id>", methods=["POST"])
         def analyze_playlist_genre(playlist_id: str):
             # TODO: actually do this
-            return render_template("index.html",
-                                   title=self._title)
+            return redirect(url_for("index", title=self._title))
 
         @self._app.route("/analyze_playlist/artists/<string:playlist_id>", methods=["POST"])
         def analyze_playlist_artists(playlist_id: str):
             # TODO: actually do this
-            return render_template("index.html",
-                                   title=self._title)
+            track_list, playlist_name = self.get_songs_from_playlist(playlist_id, current_user.get_access_token())
+            print(f"playlist name = {playlist_name}")
+            for raw_track in track_list:
+                processed_track = self.parse_raw_track(raw_track)
+                print("Track {} by {} from their {} album".format(
+                    processed_track['track_name'], processed_track['artists'][0],
+                    processed_track['album']
+                ))
+
+            return redirect(url_for("index", title=self._title))
