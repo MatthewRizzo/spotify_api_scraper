@@ -16,8 +16,10 @@ from user_manager import UserManager
 from data_manager import DataManager
 from user import User
 from backend_utils.playlist_search_table import PlaylistSearchTable, PlaylistSearchCell, create_playlist_search_cells
+from backend_utils.flask_utils import FlaskUtils
 
-class WebApp(Scraper, UserManager):
+
+class WebApp(Scraper, UserManager, FlaskUtils):
     def __init__(self, port: int, is_debug: bool, data_manager: DataManager):
 
         self._title = "Spotify API Scraper Parser"
@@ -26,6 +28,7 @@ class WebApp(Scraper, UserManager):
 
         # Create the user manager with a link to the app itself
         UserManager.__init__(self, self._app)
+        FlaskUtils.__init__(self, self._app, port)
 
         self._auth_info = self._data_manager.get_auth_info()
 
@@ -52,8 +55,7 @@ class WebApp(Scraper, UserManager):
 
         self.generateRoutes()
 
-        # Display some of the routes before starting the server
-        self.printSites()
+        self.print_routes()
 
         # start up a Web Server. Non-blocking because threaded
         if self._is_debug:
@@ -75,10 +77,6 @@ class WebApp(Scraper, UserManager):
         self.create_response_uri_pages()
 
         self.base_route = f"http://localhost:{self._port}"
-
-    def printSites(self):
-        print("Existing URLs:")
-        print(f"{self.base_route}/ (home & login page)")
 
     def create_homepage(self):
         @self._app.route("/", methods=["GET"])

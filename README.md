@@ -5,7 +5,7 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
 * break down a playlist
   * into percentages of a given artist - make a pie chart or some nice graphic
   * find way to cross reference song titles to get theri genre and make genre pie chart
-  *
+* BETTER way to timeout token for user
 
 
 ## Setup Guide
