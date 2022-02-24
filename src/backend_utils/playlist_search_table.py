@@ -13,7 +13,7 @@ class PlaylistSearchTable(Table):
     playlist_name = Col('Playlist Name')
     playlist_desc = Col('Playlist Description')
     analyze_genre = ButtonCol(
-        name='Analyze Genres in Playlist',
+        name='Analyze Playlist By Genres',
         endpoint="analyze_playlist_genre",
         url_kwargs=dict(
             playlist_id="playlist_id"
@@ -23,7 +23,7 @@ class PlaylistSearchTable(Table):
     )
 
     analyze_artists = ButtonCol(
-        name='Analyze Artists in Playlist',
+        name='Analyze Playlist By Artists and Albums',
         endpoint="analyze_playlist_artists",
         url_kwargs=dict(
             playlist_id="playlist_id"
