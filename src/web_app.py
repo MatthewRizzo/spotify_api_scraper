@@ -246,7 +246,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             input_data_artist = {} if input_data_artist is None else input_data_artist
             input_data_artist = json.loads(input_data_artist)
             input_data_artist = Utils.validate_key_format(input_data_artist, single_quote_escape_seq)
-            input_data_artist = dict(sorted(input_data_artist.items()))
+            # Sort by value - have the top values in legend by largest %
+            input_data_artist = {k: v for k, v in sorted(input_data_artist.items(), key=lambda item: item[1], reverse=True)}
 
             # First entry in dictionary MUST be the column names
             artist_data = {'Artist': 'Percentage of Playlist'}
@@ -256,7 +257,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             input_data_album = {} if input_data_album is None else input_data_album
             input_data_album = json.loads(input_data_album)
             input_data_album = Utils.validate_key_format(input_data_album, single_quote_escape_seq)
-            input_data_album = dict(sorted(input_data_album.items()))
+            # Sort by value - have the top values in legend by largest %
+            input_data_album = {k: v for k, v in sorted(input_data_album.items(), key=lambda item: item[1], reverse=True)}
 
 
             album_data = {'Album': 'Percentage of Playlist'}
