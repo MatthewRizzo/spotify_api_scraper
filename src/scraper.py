@@ -15,9 +15,6 @@ class Scraper():
         """
         pass
 
-    def get_playlist_info(self):
-        """Sends requests to the API's to get playlist info"""
-
     def get_authenticate_url(self, client_id : str, redirect_uri : str) -> str:
         """Start the process of Login/authenticate the user
         \n:return The url WITHOUT the actual return url. must add that manually"""
