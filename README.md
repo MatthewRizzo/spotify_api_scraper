@@ -2,8 +2,7 @@
 Utilizes Spotify's API for devs to analyze playlists and viewing habits. Personal / for fun project because I use spotify so much
 
 ## TODO:
-* break down a playlist
-  * find way to cross reference song titles to get theri genre and make genre pie chart
+* get % genre in playlist
 * BETTER way to timeout token for user
 * Add the image of each playlist to the playlist table
 * better handle when track has feat artists
