@@ -210,6 +210,9 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 cur_num_tracks_in_album += 1
                 chart_data_album[cur_album] = cur_num_tracks_in_album
 
+            num_artists = len(list(chart_data_artist.keys()))
+            num_albums = len(list(chart_data_album.keys()))
+
             if self._is_verbose:
                 print("\n\nDone processing Playlist:")
                 for artist in chart_data_artist.keys():
@@ -224,7 +227,9 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                     album_data=chart_data_album,
                                     playlist=playlist_name,
                                     single_quote_escape_seq=single_quote_escape_seq,
-                                    num_tracks=total_num_tracks))
+                                    num_tracks=total_num_tracks,
+                                    num_artists=num_artists,
+                                    num_albums=num_albums))
 
     def create_processed_data_pages(self):
         @self._app.route("/charts/playlist_by_artist_analysis", methods=["GET"])
@@ -234,6 +239,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             playlist = full_data["playlist"]
             single_quote_escape_seq = full_data["single_quote_escape_seq"]
             num_tracks = full_data["num_tracks"]
+            num_artists = full_data["num_artists"]
+            num_albums = full_data["num_albums"]
 
             input_data_artist = str(full_data["artist_data"]).replace("\'", "\"")
             input_data_artist = {} if input_data_artist is None else input_data_artist
@@ -265,4 +272,6 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                    artist_data=artist_data,
                                    album_data=album_data,
                                    playlist=playlist,
-                                   num_tracks=num_tracks)
+                                   num_tracks=num_tracks,
+                                   num_artists=num_artists,
+                                   num_albums=num_albums)

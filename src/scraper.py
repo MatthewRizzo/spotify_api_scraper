@@ -139,7 +139,6 @@ class Scraper():
         # Keep grabbing tracks from the playlist until return says there are no more
         while next_url is not None:
             req = requests.get(next_url, headers=header).json()
-            print(f"req keys = {req.keys()}")
 
             # The first request will be larger than subsequent ones
             # Following ones are JUST the vlaues after "tracks" key
@@ -149,7 +148,6 @@ class Scraper():
                 res_top_level = req["tracks"]
                 total_num_tracks = res_top_level['total']
                 playlist_name = req["name"]
-                print(f"playlist_name = {playlist_name}. total_num_tracks = {total_num_tracks}")
 
             next_url = res_top_level["next"]
             track_list = res_top_level["items"]
@@ -162,7 +160,6 @@ class Scraper():
                 tracks_in_playlist.append(track["track"])
 
 
-        print("done getting tracks from playlist")
         return (tracks_in_playlist, playlist_name, total_num_tracks)
 
 
