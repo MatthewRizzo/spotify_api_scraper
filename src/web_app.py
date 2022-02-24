@@ -165,20 +165,15 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
         @self._app.route("/analyze_playlist/artists/<string:playlist_id>", methods=["POST"])
         def analyze_playlist_artists(playlist_id: str):
-            # TODO: actually do this
+            chart_data_artist = {}
+            chart_data_album = {}
             track_list, playlist_name = self.get_songs_from_playlist(playlist_id, current_user.get_access_token())
 
             if self._is_verbose:
                 print(f"playlist name = {playlist_name}")
 
-            processed_track_dict = {
-                "artist_track_count": dict(),
-                "album_count": dict(),
-                "total_track_count": 0
-            }
             for raw_track in track_list:
                 processed_track = self.parse_raw_track(raw_track)
-                processed_track_dict["total_track_count"] += 1
 
                 cur_track = processed_track['track_name']
                 cur_album = processed_track['album']
@@ -194,35 +189,22 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
                 # do metric calc for each artist and album
                 # TODO: better handle features
-                cur_num_tracks_by_artist = processed_track_dict["artist_track_count"].get(cur_artist, 0)
+                cur_num_tracks_by_artist = chart_data_artist.get(cur_artist, 0)
                 cur_num_tracks_by_artist += 1
-                processed_track_dict["artist_track_count"][cur_artist] = cur_num_tracks_by_artist
+                chart_data_artist[cur_artist] = cur_num_tracks_by_artist
 
-                cur_num_tracks_in_album = processed_track_dict["album_count"].get(cur_album, 0)
+                cur_num_tracks_in_album = chart_data_album.get(cur_album, 0)
                 cur_num_tracks_in_album += 1
-                processed_track_dict["album_count"][cur_album] = cur_num_tracks_in_album
+                chart_data_album[cur_album] = cur_num_tracks_in_album
 
             if self._is_verbose:
                 print("\n\nDone processing Playlist:")
-                for artist in processed_track_dict["artist_track_count"]:
+                for artist in chart_data_artist.keys():
                     print("artist {} has {} tracks in this playlist".format(
-                        artist, processed_track_dict["artist_track_count"][artist]))
-                for album in processed_track_dict["album_count"]:
+                        artist, chart_data_artist[artist]))
+                for album in chart_data_album.keys():
                     print("album {} has {} tracks in this playlist".format(
-                        album, processed_track_dict["album_count"][album]))
-
-            # Get the counts as ratio to total number of tracks
-            chart_data_artist = {}
-            chart_data_album = {}
-            for artist, track_count in processed_track_dict["artist_track_count"].items():
-                prop = 100 * track_count / processed_track_dict["total_track_count"]
-                rounded_prop = float("{:.2f}".format(prop))
-                chart_data_artist[artist] = rounded_prop
-
-            for album, track_count in processed_track_dict["album_count"].items():
-                prop = 100 * track_count / processed_track_dict["total_track_count"]
-                rounded_prop = float("{:.2f}".format(prop))
-                chart_data_album[album] = rounded_prop
+                        album, chart_data_album[album]))
 
             return redirect(url_for("show_playlist_by_artist_analysis",
                                     artist_data=chart_data_artist,
