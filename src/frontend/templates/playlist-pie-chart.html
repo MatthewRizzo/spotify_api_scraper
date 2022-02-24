@@ -15,9 +15,9 @@
             var data = google.visualization.arrayToDataTable([
                 {% for key, value in artist_data.items()  %}
                     {% if value is string %}
-                    ["{{ key | safe }}", "{ value }}"],
+                    ["{{ key | safe }}", "{ value | safe}}"],
                     {% else %}
-                    ["{{ key | safe }}", {{ value }}],
+                    ["{{ key | safe }}", {{ value | safe}}],
                     {% endif %}
                 {% endfor %}
             ]);
@@ -40,7 +40,7 @@
             var data = google.visualization.arrayToDataTable([
                 {% for key, value in album_data.items() %}
                     {% if value is string %}
-                    ["{{ key | safe }}", "{{ value }}"],
+                    ["{{ key | safe }}", '{{ value | safe }}'],
                     {% else %}
                     ["{{ key | safe }}", {{ value }}],
                     {% endif %}

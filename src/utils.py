@@ -58,24 +58,34 @@ class Utils():
             "'": "&apos;",
             ">": "&gt;",
             "<": "&lt;",
+            "\"": '\\"'
         }
         return "".join(html_escape_table.get(c, c) for c in str_to_escape)
 
     @classmethod
-    def validate_key_format(cls, dict_to_check: dict, single_quote_escape_seq: str) -> dict:
+    def validate_key_format(cls, dict_to_check: dict, single_quote_escape_seq: str, double_quote_escape_seq: str) -> dict:
         """Given a dictionary, ensures all keys are formatted properly. i.e. that there are no " in the key name
         :param single_quote_escape_seq An escape sequence to denote this SHOULD be a single quote.
         \n:return the properly formatted dictionary and list of keys that were changed"""
-        keys_to_change = []
+        keys_to_change_single = []
+        keys_to_change_double = []
         for key in dict_to_check.keys():
             if single_quote_escape_seq in key:
-                keys_to_change.append(key)
+                keys_to_change_single.append(key)
+            if double_quote_escape_seq in key:
+                keys_to_change_double.append(key)
 
-        for old_key in keys_to_change:
+        for old_key in keys_to_change_single:
             new_key = str(old_key).replace(single_quote_escape_seq, "'")
             dict_to_check[new_key] = dict_to_check.pop(old_key)
 
-            is_old_in_dict = old_key in dict_to_check
+            # also update the key to get changed for double quotes (if it has both)
+            keys_to_change_double = list(map(lambda x: x.replace(old_key, new_key), keys_to_change_double))
+
+        for old_key in keys_to_change_double:
+            # make sure to escape the " so the html doesnt think a value is ending
+            new_key = str(old_key).replace(double_quote_escape_seq, '\\"')
+            dict_to_check[new_key] = dict_to_check.pop(old_key)
 
         return dict_to_check
 
