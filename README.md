@@ -3,9 +3,7 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
 
 ## TODO:
 * break down a playlist
-  * into percentages of a given artist - make a pie chart or some nice graphic
   * find way to cross reference song titles to get theri genre and make genre pie chart
-  * Breakadown playlist by albums
 * BETTER way to timeout token for user
 * Add the image of each playlist to the playlist table
 * better handle when track has feat artists
