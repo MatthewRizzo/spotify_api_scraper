@@ -215,13 +215,14 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 chart_data_artist[artist] = rounded_prop
 
             return redirect(url_for("show_playlist_by_artist_analysis",
-                                data=chart_data_artist))
+                                    data=chart_data_artist, playlist=playlist_name))
 
     def create_processed_data_pages(self):
         @self._app.route("/charts/playlist_by_artist_analysis", methods=["GET"])
         def show_playlist_by_artist_analysis():
             """:param data is a dictionary that contains the processed metrics"""
             full_data = request.args.to_dict()
+            playlist = full_data["playlist"]
             input_data = str(full_data["data"]).replace("\'", "\"")
             input_data = {} if input_data is None else input_data
             input_data = json.loads(input_data)
@@ -231,4 +232,4 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             data.update(input_data)
 
             return render_template("playlist-artist-pie-chart.html",
-                            title=self._title, data=data)
+                                   title=self._title, data=data, playlist=playlist)
