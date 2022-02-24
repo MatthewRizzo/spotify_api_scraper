@@ -27,3 +27,22 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
 * Note: before running, please ensure the virtual environment is created as described in [Setup Guide](#setup-guide)
     * Whenever the program is run, it should be from the virtual environment python within [Spotify-api-scrapper-venv/bin/python](Spotify-api-scrapper-venv/bin/python)
   * This is automatically handled by the [start script](start.sh)
+
+## Userflow & Example Running
+
+1. Run [start script](start.sh)
+2. Go to [Homepage](<http://localhost:8080/>) - <http://localhost:8080/>
+3. Follow authorization prompts - sign into spotify
+  1. ![auth_example](docs/images/authorization.png)
+  2. Click Agree
+4. Click **Playlist Metrics**
+   1. ![Playlist-Metrics-Image](docs/images/top_bar.jpg)
+5. See a list of all public Playlists
+   1. ![Playlist-Table](docs/images/example_playlist_table.jpg)
+   2. **Bonus:** You get to see my taste in Music *wink face*
+6. Select **"Analyze Playlist By Artists and Albums"**
+   1. ![Breakdown of Playlist By Artist](docs/images/example_artist_breakdown.jpg)
+   2. ![Breakdown of Playlist By Album](docs/images/example_album_breakdown.jpg)
+7. Select **"Analyze Playlist By Genre"**
+   1. Currently not implemented / debating if possible
+   2. Spotify lists multiple genres for each song, so analyzing genre's in a playlist requires judgment calls
