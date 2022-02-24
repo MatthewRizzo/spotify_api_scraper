@@ -50,6 +50,18 @@ class Utils():
         return cls.base_spotify_accounts_uri
 
     @classmethod
+    def escape_html_special_char(cls, str_to_escape: str) -> str:
+        """:return Escaped string"""
+        html_escape_table = {
+            "&": "&amp;",
+            '"': "&quot;",
+            "'": "&apos;",
+            ">": "&gt;",
+            "<": "&lt;",
+        }
+        return "".join(html_escape_table.get(c, c) for c in str_to_escape)
+
+    @classmethod
     def validate_key_format(cls, dict_to_check: dict, single_quote_escape_seq: str) -> dict:
         """Given a dictionary, ensures all keys are formatted properly. i.e. that there are no " in the key name
         :param single_quote_escape_seq An escape sequence to denote this SHOULD be a single quote.

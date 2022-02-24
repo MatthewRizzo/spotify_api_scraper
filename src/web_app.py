@@ -9,6 +9,7 @@ import secrets
 import logging
 import requests
 import base64
+from jinja2 import Markup, escape
 
 #------------------------------Project Imports-----------------------------#
 from utils import Utils
@@ -154,9 +155,13 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             # return redirect(url_for("index", title=self._title))
             playlist_search_cell_list = create_playlist_search_cells(user_playlists_dict)
             playlist_table = PlaylistSearchTable(playlist_search_cell_list)
+
+
+            # Done in order to allow for special characters in the playlist descriptions
+            escaped_playlist_table = Markup(playlist_table.__html__()).unescape()
             return render_template("playlistResult.html",
                                    title=self._title,
-                                   playlist_table=playlist_table)
+                                   playlist_table=escaped_playlist_table)
 
         @self._app.route("/analyze_playlist/genre/<string:playlist_id>", methods=["POST"])
         def analyze_playlist_genre(playlist_id: str):

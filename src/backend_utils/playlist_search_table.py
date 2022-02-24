@@ -1,9 +1,11 @@
 from flask_table import Table, Col
 from flask_table.columns import LinkCol, ButtonCol
-
 from typing import Optional, Dict, List
 
-from flask import url_for
+from flask import url_for, escape
+from jinja2 import Markup, escape
+
+from utils import Utils
 
 class PlaylistSearchTable(Table):
     classes = ["table", "is-bordered", "is-striped",
@@ -54,10 +56,13 @@ def create_playlist_search_cells(raw_res_dict: Dict) -> List[PlaylistSearchCell]
         # Keep adding to the search results list with cell objects
         # Will ad-hoc generate a table on the webpage with all the results
         for playlist_key, playlist_val in raw_res_dict.items():
+            description = playlist_val['description']
+            escaped_description = escape(description)
+            # escaped_description = Utils.escape_html_special_char(escaped_description)
             search_res.append(
                 PlaylistSearchCell(playlist_val['name'],
                                    playlist_val['id'],
-                                   playlist_val['description'])
+                                   escaped_description)
             )
 
         search_res.sort(key=lambda cell: cell.playlist_name)

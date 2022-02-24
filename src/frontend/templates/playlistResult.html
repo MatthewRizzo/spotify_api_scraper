@@ -3,7 +3,7 @@
 <body>
 
     {% block content %}
-    {{ playlist_table }}
+    {{ playlist_table | safe }}
 
     <div class="buttons is-centered">
         <a href="{{ url_for('index') }}" class="button is-link">
