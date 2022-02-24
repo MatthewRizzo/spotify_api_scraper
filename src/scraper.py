@@ -141,18 +141,18 @@ class Scraper():
         # Keep grabbing tracks from the playlist until return says there are no more
         while more_tracks:
             req = requests.get(req_url, headers=header).json()
-            next_url = req['tracks']['next']
+            next_url = req["tracks"]["next"]
             more_tracks = False if next_url is None else True
 
-            track_list = req['tracks']['items']
+            track_list = req["tracks"]["items"]
 
             # see https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track
             # for description of what each track looks like
             for track in track_list:
-                tracks_in_playlist.append(track['track'])
+                tracks_in_playlist.append(track["track"])
 
             if playlist_name is None:
-                playlist_name = req['name']
+                playlist_name = req["name"]
 
         return (tracks_in_playlist, playlist_name)
 
@@ -167,12 +167,12 @@ class Scraper():
         res_dict = {}
         res_dict["track_id"] = raw_track["id"]
         # print(raw_track)
-        res_dict['track_name'] = raw_track['name']
-        res_dict['album'] = raw_track['album']['name']
-        res_dict['artists'] = []
+        res_dict["track_name"] = raw_track["name"]
+        res_dict["album"] = raw_track["album"]["name"]
+        res_dict["artists"] = []
 
-        for artist_dict in raw_track['artists']:
-            res_dict['artists'].append(artist_dict['name'])
+        for artist_dict in raw_track["artists"]:
+            res_dict["artists"].append(artist_dict["name"])
 
         return res_dict
 

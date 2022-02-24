@@ -13,11 +13,11 @@
         google.charts.setOnLoadCallback(drawChart);
         function drawChart() {
             var data = google.visualization.arrayToDataTable([
-                {% for key, value in artist_data.items() %}
+                {% for key, value in artist_data.items()  %}
                     {% if value is string %}
-                    ['{{ key }}', '{{ value }}'],
+                    ["{{ key | safe }}", "{ value }}"],
                     {% else %}
-                    ['{{ key }}', {{ value }}],
+                    ["{{ key | safe }}", {{ value }}],
                     {% endif %}
                 {% endfor %}
             ]);
@@ -40,9 +40,9 @@
             var data = google.visualization.arrayToDataTable([
                 {% for key, value in album_data.items() %}
                     {% if value is string %}
-                    ['{{ key }}', '{{ value }}'],
+                    ["{{ key | safe }}", "{{ value }}"],
                     {% else %}
-                    ['{{ key }}', {{ value }}],
+                    ["{{ key | safe }}", {{ value }}],
                     {% endif %}
                 {% endfor %}
             ]);

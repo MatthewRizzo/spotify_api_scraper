@@ -1,6 +1,7 @@
 #------------------------------STANDARD DEPENDENCIES-----------------------------#
 import json
 import pathlib
+from typing import Tuple
 
 
 class Utils():
@@ -47,6 +48,24 @@ class Utils():
     @classmethod
     def get_base_spotify_accounts_uri(cls) -> pathlib.Path:
         return cls.base_spotify_accounts_uri
+
+    @classmethod
+    def validate_key_format(cls, dict_to_check: dict, single_quote_escape_seq: str) -> dict:
+        """Given a dictionary, ensures all keys are formatted properly. i.e. that there are no " in the key name
+        :param single_quote_escape_seq An escape sequence to denote this SHOULD be a single quote.
+        \n:return the properly formatted dictionary and list of keys that were changed"""
+        keys_to_change = []
+        for key in dict_to_check.keys():
+            if single_quote_escape_seq in key:
+                keys_to_change.append(key)
+
+        for old_key in keys_to_change:
+            new_key = str(old_key).replace(single_quote_escape_seq, "'")
+            dict_to_check[new_key] = dict_to_check.pop(old_key)
+
+            is_old_in_dict = old_key in dict_to_check
+
+        return dict_to_check
 
 
 

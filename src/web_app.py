@@ -175,13 +175,19 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             for raw_track in track_list:
                 processed_track = self.parse_raw_track(raw_track)
 
-                cur_track = processed_track['track_name']
-                cur_album = processed_track['album']
+                cur_track = processed_track["track_name"]
+                # Used to remove ' from key names until it is safe to put them back in
+                # eventually the ' wrapped around key's are ALL changed to ",
+                # but that will also change ' in the keys to " which is BAD for parsing.
+                # change the ' to know what they are later
+                single_quote_escape_seq = "#$%^&*!"
+                cur_album = str(processed_track["album"]).replace("\'", single_quote_escape_seq)
+
 
                 if cur_album == " " or cur_album == '':
                     cur_album = "Album Name Not Given"
 
-                cur_artist = processed_track['artists'][0]
+                cur_artist = str(processed_track["artists"][0]).replace("\'", single_quote_escape_seq)
                 if self._is_verbose:
                     print("Track {} by {} from their {} album".format(
                         cur_track, cur_artist, cur_album
@@ -209,7 +215,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             return redirect(url_for("show_playlist_by_artist_analysis",
                                     artist_data=chart_data_artist,
                                     album_data=chart_data_album,
-                                    playlist=playlist_name))
+                                    playlist=playlist_name,
+                                    single_quote_escape_seq=single_quote_escape_seq))
 
     def create_processed_data_pages(self):
         @self._app.route("/charts/playlist_by_artist_analysis", methods=["GET"])
@@ -217,25 +224,30 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             """:param data is a dictionary that contains the processed metrics"""
             full_data = request.args.to_dict()
             playlist = full_data["playlist"]
-
+            single_quote_escape_seq = full_data["single_quote_escape_seq"]
 
             input_data_artist = str(full_data["artist_data"]).replace("\'", "\"")
             input_data_artist = {} if input_data_artist is None else input_data_artist
             input_data_artist = json.loads(input_data_artist)
+            input_data_artist = Utils.validate_key_format(input_data_artist, single_quote_escape_seq)
 
             # First entry in dictionary MUST be the column names
             artist_data = {'Artist': 'Percentage of Playlist'}
             artist_data.update(input_data_artist)
 
-
             input_data_album = str(full_data["album_data"]).replace("\'", "\"")
             input_data_album = {} if input_data_album is None else input_data_album
             input_data_album = json.loads(input_data_album)
+            input_data_album = Utils.validate_key_format(input_data_album, single_quote_escape_seq)
             album_data = {'Album': 'Percentage of Playlist'}
             album_data.update(input_data_album)
 
+            # For both sets of dictionaries, make sure all the key fields do NOT have " in them
 
-            return render_template("playlist-artist-pie-chart.html",
+
+            # TODO: add links to the pie chart
+            # https: // stackoverflow.com/questions/6205621/how-to-add-links-in-google-chart-api
+            return render_template("playlist-pie-chart.html",
                                    title=self._title,
                                    artist_data=artist_data,
                                    album_data=album_data,
