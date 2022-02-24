@@ -122,39 +122,48 @@ class Scraper():
         return playlists
 
     def get_songs_from_playlist(self, playlist_id: str, access_token : str
-                                ) -> Tuple[List, str]:
+                                ) -> Tuple[List, str, str]:
         """Given a playlist id, grabs all of the songs from the playlist
-        \n:return Tuple of (unprocessed list of tracks, playlist_name)
+        \n:return Tuple of (unprocessed list of tracks, playlist_name, total_num_tracks)
         \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlist
         \n:docs for return "tracks" - https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track
         """
 
         tracks_in_playlist = []
-        next_url = None
-        more_tracks = True
         playlist_name = None
 
-        req_url = f"https://api.spotify.com/v1/playlists/{playlist_id}"
+        next_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/"
         header = {'Authorization': "Bearer " + access_token,
                   "Content-Type": "application/json"}
 
         # Keep grabbing tracks from the playlist until return says there are no more
-        while more_tracks:
-            req = requests.get(req_url, headers=header).json()
-            next_url = req["tracks"]["next"]
-            more_tracks = False if next_url is None else True
+        while next_url is not None:
+            req = requests.get(next_url, headers=header).json()
+            print(f"req keys = {req.keys()}")
 
-            track_list = req["tracks"]["items"]
+            # The first request will be larger than subsequent ones
+            # Following ones are JUST the vlaues after "tracks" key
+            track_list = []
+            res_top_level = req
+            if "tracks" in req:
+                res_top_level = req["tracks"]
+                total_num_tracks = res_top_level['total']
+                playlist_name = req["name"]
+                print(f"playlist_name = {playlist_name}. total_num_tracks = {total_num_tracks}")
+
+            next_url = res_top_level["next"]
+            track_list = res_top_level["items"]
+
 
             # see https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track
             # for description of what each track looks like
+            # Note: after 1st request, response is ONLY values within "tracks"
             for track in track_list:
                 tracks_in_playlist.append(track["track"])
 
-            if playlist_name is None:
-                playlist_name = req["name"]
 
-        return (tracks_in_playlist, playlist_name)
+        print("done getting tracks from playlist")
+        return (tracks_in_playlist, playlist_name, total_num_tracks)
 
 
     def parse_raw_track(self, raw_track) -> dict:

@@ -165,9 +165,16 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
         @self._app.route("/analyze_playlist/artists/<string:playlist_id>", methods=["POST"])
         def analyze_playlist_artists(playlist_id: str):
+            token = current_user.get_access_token()
             chart_data_artist = {}
             chart_data_album = {}
-            track_list, playlist_name = self.get_songs_from_playlist(playlist_id, current_user.get_access_token())
+            track_list, playlist_name, total_num_tracks = self.get_songs_from_playlist(playlist_id, token)
+
+            # Used to remove ' from key names until it is safe to put them back in
+            # eventually the ' wrapped around key's are ALL changed to ",
+            # but that will also change ' in the keys to " which is BAD for parsing.
+            # change the ' to know what they are later
+            single_quote_escape_seq = "#$%^&*!"
 
             if self._is_verbose:
                 print(f"playlist name = {playlist_name}")
@@ -176,11 +183,6 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 processed_track = self.parse_raw_track(raw_track)
 
                 cur_track = processed_track["track_name"]
-                # Used to remove ' from key names until it is safe to put them back in
-                # eventually the ' wrapped around key's are ALL changed to ",
-                # but that will also change ' in the keys to " which is BAD for parsing.
-                # change the ' to know what they are later
-                single_quote_escape_seq = "#$%^&*!"
                 cur_album = str(processed_track["album"]).replace("\'", single_quote_escape_seq)
 
 
@@ -216,7 +218,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                     artist_data=chart_data_artist,
                                     album_data=chart_data_album,
                                     playlist=playlist_name,
-                                    single_quote_escape_seq=single_quote_escape_seq))
+                                    single_quote_escape_seq=single_quote_escape_seq,
+                                    num_tracks=total_num_tracks))
 
     def create_processed_data_pages(self):
         @self._app.route("/charts/playlist_by_artist_analysis", methods=["GET"])
@@ -225,6 +228,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             full_data = request.args.to_dict()
             playlist = full_data["playlist"]
             single_quote_escape_seq = full_data["single_quote_escape_seq"]
+            num_tracks = full_data["num_tracks"]
 
             input_data_artist = str(full_data["artist_data"]).replace("\'", "\"")
             input_data_artist = {} if input_data_artist is None else input_data_artist
@@ -251,4 +255,5 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                    title=self._title,
                                    artist_data=artist_data,
                                    album_data=album_data,
-                                   playlist=playlist)
+                                   playlist=playlist,
+                                   num_tracks=num_tracks)
