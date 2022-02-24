@@ -181,7 +181,11 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 processed_track_dict["total_track_count"] += 1
 
                 cur_track = processed_track['track_name']
-                cur_album = "Undefined" if processed_track['album'] == " " else processed_track['album']
+                cur_album = processed_track['album']
+
+                if cur_album == " " or cur_album == '':
+                    cur_album = "Album Name Not Given"
+
                 cur_artist = processed_track['artists'][0]
                 if self._is_verbose:
                     print("Track {} by {} from their {} album".format(
@@ -209,13 +213,21 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
             # Get the counts as ratio to total number of tracks
             chart_data_artist = {}
+            chart_data_album = {}
             for artist, track_count in processed_track_dict["artist_track_count"].items():
                 prop = 100 * track_count / processed_track_dict["total_track_count"]
                 rounded_prop = float("{:.2f}".format(prop))
                 chart_data_artist[artist] = rounded_prop
 
+            for album, track_count in processed_track_dict["album_count"].items():
+                prop = 100 * track_count / processed_track_dict["total_track_count"]
+                rounded_prop = float("{:.2f}".format(prop))
+                chart_data_album[album] = rounded_prop
+
             return redirect(url_for("show_playlist_by_artist_analysis",
-                                    data=chart_data_artist, playlist=playlist_name))
+                                    artist_data=chart_data_artist,
+                                    album_data=chart_data_album,
+                                    playlist=playlist_name))
 
     def create_processed_data_pages(self):
         @self._app.route("/charts/playlist_by_artist_analysis", methods=["GET"])
@@ -223,13 +235,26 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             """:param data is a dictionary that contains the processed metrics"""
             full_data = request.args.to_dict()
             playlist = full_data["playlist"]
-            input_data = str(full_data["data"]).replace("\'", "\"")
-            input_data = {} if input_data is None else input_data
-            input_data = json.loads(input_data)
+
+
+            input_data_artist = str(full_data["artist_data"]).replace("\'", "\"")
+            input_data_artist = {} if input_data_artist is None else input_data_artist
+            input_data_artist = json.loads(input_data_artist)
 
             # First entry in dictionary MUST be the column names
-            data = {'Artist': 'Percentage of Playlist'}
-            data.update(input_data)
+            artist_data = {'Artist': 'Percentage of Playlist'}
+            artist_data.update(input_data_artist)
+
+
+            input_data_album = str(full_data["album_data"]).replace("\'", "\"")
+            input_data_album = {} if input_data_album is None else input_data_album
+            input_data_album = json.loads(input_data_album)
+            album_data = {'Album': 'Percentage of Playlist'}
+            album_data.update(input_data_album)
+
 
             return render_template("playlist-artist-pie-chart.html",
-                                   title=self._title, data=data, playlist=playlist)
+                                   title=self._title,
+                                   artist_data=artist_data,
+                                   album_data=album_data,
+                                   playlist=playlist)

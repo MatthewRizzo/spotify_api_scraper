@@ -7,13 +7,13 @@
     <link rel="icon" href="../static/images/music-symbol.png">
     <title>{{ title }}</title>
 
-
+    <!-- Make a pie chart for artist in playlist -->
     <script type="text/javascript">
         google.charts.load("current", { packages: ["corechart"] });
         google.charts.setOnLoadCallback(drawChart);
         function drawChart() {
             var data = google.visualization.arrayToDataTable([
-                {% for key, value in data.items() %}
+                {% for key, value in artist_data.items() %}
                     {% if value is string %}
                     ['{{ key }}', '{{ value }}'],
                     {% else %}
@@ -32,16 +32,44 @@
       };
     </script>
 
+    <!-- Make a pie chart for album in playlist -->
+    <script type="text/javascript">
+        google.charts.load("current", { packages: ["corechart"] });
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                {% for key, value in album_data.items() %}
+                    {% if value is string %}
+                    ['{{ key }}', '{{ value }}'],
+                    {% else %}
+                    ['{{ key }}', {{ value }}],
+                    {% endif %}
+                {% endfor %}
+            ]);
+
+            var options = {
+                title: 'Playlist Breakdown By Album',
+                is3D: false,
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('playlist_by_album_piechart'));
+            chart.draw(data, options);
+        };
+    </script>
+
 </head>
 
 <body>
-    {% for key, value in data.items() %}
-        {{key}}: {{value}}
-    {% endfor %}
     <div style="margin: 10px 0 0 10px;width: 1000px">
         <h3><b>Result of Breaking Down Playlist {{ playlist }} by Artist:</b></h3>
 
-        <div id="playlist_by_artist_piechart" style="width: 900px; height: 500px;"></div>
+        <div id="playlist_by_artist_piechart" style="width: 99%; height: 500px;"></div>
+    </div>
+
+    <div style="margin: 10px 0 0 10px;width: 1000px">
+        <h3><b>Result of Breaking Down Playlist {{ playlist }} by Album:</b></h3>
+
+        <div id="playlist_by_album_piechart" style="width: 99%; height: 500px;"></div>
     </div>
 </body>
 
