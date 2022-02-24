@@ -15,7 +15,7 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
   1. ![auth_example](docs/images/authorization.png)
   2. Click Agree
 5. Click **Playlist Metrics**
-   1. ![Playlist-Metrics-Image](docs/images/top_bar.jpg)
+   1. ![Playlist-Metrics-Image](docs/images/top_bar_after_auth.jpg)
 6. See a list of all public Playlists
    1. ![Playlist-Table](docs/images/example_playlist_table.jpg)
    2. **Bonus:** You get to see my taste in Music *wink face*
