@@ -38,9 +38,9 @@ class Scraper():
                         user_auth_code: str,
                         client_id : int,
                         client_secret: int,
-                        auth_redirect_uri: str) -> Optional[Dict]:
+                        auth_redirect_uri: str) -> Optional[Tuple[str, str, str]]:
         """Given a user_auth_token, client_id, and client_secret, gets an acccess token
-        \n:return Dict on success, None on failure.
+        \n:return Tuple on success (access_token, refresh_token, valid_for_sec), None on failure.
         \n  Dict corresponds to https://developer.spotify.com/documentation/general/guides/authorization/code-flow/#response-1 """
         params = {"grant_type": "authorization_code",
                   "code": user_auth_code,
@@ -64,14 +64,47 @@ class Scraper():
         # Make sure the request is successful
         if 'error' in access_token_res_dict:
             print(f"ERROR getting access token: {access_token_res_dict}")
-            return None
+            return (None, None, None)
 
-        access_token = access_token_res_dict['access_token']
-        valid_for_sec = access_token_res_dict['expires_in']
+        access_token = access_token_res_dict['access_token'] if 'access_token' in access_token_res_dict else None
+        refresh_token = access_token_res_dict['refresh_token'] if 'refresh_token' in access_token_res_dict else None
+        valid_for_sec = access_token_res_dict['expires_in'] if 'expires_in' in access_token_res_dict else None
 
         if self._is_verbose:
             print(f"Got a new access token valid for {valid_for_sec} seconds")
-        return access_token_res_dict
+        return access_token, refresh_token, valid_for_sec
+
+    def refresh_access_token(self, client_id: str, client_secret : str, refresh_token: str) -> Tuple[str, str]:
+        """:return Tuple(new_access_token, new_valid_for_sec). values are Null on failure
+        :docs https://developer.spotify.com/documentation/general/guides/authorization/code-flow/
+            see Request a refreshed Access Token for the format"""
+        refresh_uri = Utils.get_base_spotify_accounts_uri() + "/api/token"
+        params = {"grant_type": "refresh_token",
+                  "refresh_token": refresh_token,
+                    }
+
+        # header param must be base64 encoded with client_id:client_secret (<base64 encoded client_id:client_secret>)
+        encoded_str = f"{client_id}:{client_secret}".encode('ascii')
+        encoded_auth_bytes = base64.b64encode(encoded_str)
+        encoded_auth_str = encoded_auth_bytes.decode()
+
+        header_auth_str = 'Basic ' + encoded_auth_str
+        headers = {'Authorization': header_auth_str,
+                   "Content-Type": "application/x-www-form-urlencoded"}
+
+        req = requests.post(refresh_uri,
+                            params=params, headers=headers)
+        refresh_access_token_res = req.json()
+
+        # Make sure the request is successful
+        if 'error' in refresh_access_token_res:
+            print(f"ERROR getting access token: {refresh_access_token_res}")
+            return None
+
+        new_access_token = refresh_access_token_res['access_token'] if 'access_token' in refresh_access_token_res else None
+        new_valid_for_sec = refresh_access_token_res['expires_in'] if 'expires_in' in refresh_access_token_res else None
+        return new_access_token, new_valid_for_sec
+
 
     def get_user_id(self, access_token) -> str:
         """Given an access token, get the user's id
@@ -182,6 +215,4 @@ class Scraper():
         return res_dict
 
 
-    def refresh_access_token(self):
-        # TODO: not sure if it is needed in the context of this app
-        pass
+

@@ -24,6 +24,8 @@ class User(UserMixin):
         self._data_manager = DataManager()
         self.access_token = self._data_manager.get_users_access_token(userId)
 
+    def get_user_id(self) -> str:
+        return self.id
 
     def has_valid_user_token(self) -> bool:
         is_valid = self._data_manager.is_token_valid(self.id)

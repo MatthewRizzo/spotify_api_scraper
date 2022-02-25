@@ -1,5 +1,6 @@
 #-----------------------------3RD PARTY DEPENDENCIES-----------------------------#
 from datetime import datetime, timedelta
+from email.policy import default
 import json
 import flask
 from flask import Flask, session, render_template, request, redirect, flash, url_for, jsonify
@@ -10,6 +11,7 @@ import logging
 import requests
 import base64
 from jinja2 import Markup, escape
+from is_safe_url import is_safe_url
 
 #------------------------------Project Imports-----------------------------#
 from utils import Utils
@@ -89,11 +91,70 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         def index():
             return render_template("homepage.html", title=self._title)
 
+        @self._app.route("/authenticated", methods=["GET"])
+        @login_required
+        def post_auth():
+            """All users move from homepage to authenticated hompage (this one)"""
+            if not current_user.is_active():
+                self.refresh_view = url_for("refresh_access_token")
+                return self.needs_refresh()
+            return render_template("homepage.html", title=self._title)
+
         @self._app.route("/logout", methods=["GET"])
         @login_required
         def logout():
+            # remove the refresh token from the user info
+            self._data_manager.remove_users_refresh_token(current_user.get_id())
+
             logout_user()
             return redirect(url_for("index", title=self._title))
+
+        @self._app.route("/refresh_access_token", methods=["GET"])
+        @login_required
+        def refresh_access_token():
+            # if self._is_verbose is True:
+            print("refreshing access token")
+            user_id = current_user.get_user_id()
+
+            # user_id = current_user.get_user_id()
+            refresh_token = self._data_manager.get_users_refresh_token(user_id)
+
+            # happens when user is logged out - refresh token removed
+            if refresh_token is None:
+                return redirect(url_for("post_auth", title=self._title))
+
+            new_access_token, new_valid_for_sec = self.refresh_access_token(
+                                                        self._auth_info['client_id'],
+                                                        self._auth_info['client_secret'],
+                                                        refresh_token
+                                                    )
+            # If the token can be refreshed, log the user back in
+            if new_access_token is not None and new_valid_for_sec is not None:
+                new_end_time = Utils.calc_end_time(datetime.now(), new_valid_for_sec)
+
+                self._data_manager.save_users_access_token(
+                    new_access_token, user_id, new_end_time, refresh_token)
+                user = User(user_id)
+                login_user(user)
+
+            # On success redirect to the page the user was originally going to
+            next = flask.request.args.get('next')
+            white_list = self.get_valid_endpoints()
+            is_next_url_bad = next == None or not is_safe_url(next, white_list)
+
+            found_url = False
+            for url in white_list:
+                # check if the given url is part of a while list url
+                if next.find(str(url)) != -1:
+                    found_url = True
+                    break
+            is_next_url_bad = is_next_url_bad and found_url
+
+            if is_next_url_bad:
+                return redirect(url_for('post_auth'))
+            else:
+                preserve_code = 307 # used to keep state - get or post
+                return redirect(next, code=preserve_code)
 
     def create_response_uri_pages(self):
         """Used to make all routes REQUIRED by spotify to receive responses"""
@@ -113,32 +174,31 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             # else:
             #     print("State variable's do not match....XCF in progress. Ending it.")
             # Can now ask for the Request Access Token
-            self._access_token_dict = self.get_access_token(self.user_auth_code,
+            access_token, refresh_token, valid_for_sec = self.get_access_token(self.user_auth_code,
                                                       self._auth_info['client_id'],
                                                       self._auth_info['client_secret'],
                                                       self._auth_redirect_uri)
-            if self._access_token_dict is None:
+            if access_token is None or refresh_token is None or valid_for_sec is None:
                 print("Error getting the access token. quitting")
-                exit
-            access_token = self._access_token_dict['access_token']
+                logout_user()
+                return redirect(url_for("index", title=self._title))
             user_id = self.get_user_id(access_token)
 
             # Figure out when the token times out
             current_time = datetime.now()
 
             # add the time to live - given in seconds using 2nd param
-            datetime_delta = timedelta(seconds=self._access_token_dict['expires_in'])
-            end_valid_time = (current_time + datetime_delta).strftime("%m/%d/%Y %H:%M:%S")
+            end_valid_time = Utils.calc_end_time(current_time, valid_for_sec)
 
             self._data_manager.save_users_access_token(
-                access_token, user_id, end_valid_time)
+                access_token, user_id, end_valid_time, refresh_token)
 
             user = User(user_id)
             login_user(user)
-            return redirect(url_for("index", title=self._title))
+            return redirect(url_for("post_auth", title=self._title))
 
     def create_api_routes(self):
-        @self._app.route("/spotify_authorize", methods=["GET", "POST"])
+        @self._app.route("/spotify_authorize", methods=["GET"])
         def spotify_authorize():
             # only auth if needed
             if not current_user.is_authenticated or not current_user.is_active():
@@ -147,13 +207,17 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 auth_url = self.get_authenticate_url(self._auth_info['client_id'], self._auth_redirect_uri)
                 return redirect(auth_url)
             else:
-                return redirect(url_for("index", title=self._title))
+                return redirect(url_for("post_auth", title=self._title))
 
         @self._app.route("/playlist_metrics", methods=["GET"])
         @login_required
         def playlist_metrics():
+            if not current_user.is_active():
+                self.refresh_view = url_for("refresh_access_token")
+                return self.needs_refresh()
+
             user_playlists_dict = self.get_users_playlists(current_user.get_access_token())
-            # return redirect(url_for("index", title=self._title))
+
             playlist_search_cell_list = create_playlist_search_cells(user_playlists_dict)
             playlist_table = PlaylistSearchTable(playlist_search_cell_list)
 
@@ -164,15 +228,23 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                    title=self._title,
                                    playlist_table=escaped_playlist_table)
 
-        @self._app.route("/analyze_playlist/genre/<string:playlist_id>", methods=["POST"])
+        # Allow both bcause defaults to post, but when redirecting with next, use get
+        @self._app.route("/analyze_playlist/genre/<string:playlist_id>", methods=["GET", "POST"])
         @login_required
         def analyze_playlist_genre(playlist_id: str):
+            if not current_user.is_active():
+                self.refresh_view = url_for("refresh_access_token")
+                return self.needs_refresh()
             # TODO: actually do this
-            return redirect(url_for("index", title=self._title))
+            return redirect(url_for("post_auth", title=self._title))
 
-        @self._app.route("/analyze_playlist/artists/<string:playlist_id>", methods=["POST"])
+        # Allow both bcause defaults to post, but when redirecting with next, use get
+        @self._app.route("/analyze_playlist/artists/<string:playlist_id>", methods=["GET", "POST"])
         @login_required
         def analyze_playlist_artists(playlist_id: str):
+            if not current_user.is_active():
+                self.refresh_view = url_for("refresh_access_token")
+                return self.needs_refresh()
             token = current_user.get_access_token()
             chart_data_artist = {}
             chart_data_album = {}
@@ -242,6 +314,10 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         @login_required
         def show_playlist_by_artist_analysis():
             """:param data is a dictionary that contains the processed metrics"""
+            if not current_user.is_active():
+                self.refresh_view = url_for("refresh_access_token")
+                return self.needs_refresh()
+
             full_data = request.args.to_dict()
             playlist = full_data["playlist"]
             single_quote_escape_seq = full_data["single_quote_escape_seq"]
@@ -283,3 +359,4 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                    num_tracks=num_tracks,
                                    num_artists=num_artists,
                                    num_albums=num_albums)
+

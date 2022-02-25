@@ -9,7 +9,6 @@ import sys
 
 #------------------------------Project Imports-----------------------------#
 from utils import Utils
-from data_manager import DataManager
 
 class DataManager():
     def __init__(self) -> None:

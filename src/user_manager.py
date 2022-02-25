@@ -14,8 +14,8 @@ from flask_login import LoginManager, logout_user
 import requests
 
 #--------------------------------OUR DEPENDENCIES--------------------------------#
-from user import User
 from data_manager import DataManager
+from user import User
 
 class UserManager(LoginManager):
     def __init__(self, app: Flask):
@@ -44,7 +44,7 @@ class UserManager(LoginManager):
                 \n@Return: Reference to the User class related to this userToken
             """
             possible_user = None
-            if self._data_manager.does_user_exist():
+            if self._data_manager.does_user_exist(user_id):
                 possible_user = User(user_id)
 
 
