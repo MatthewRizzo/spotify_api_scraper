@@ -1,12 +1,10 @@
 requests==2.22.0
-Flask==1.1.2
+Flask==2.0.1
 Flask-Login==0.5.0
-Flask-SocketIO==4.3.1
-Flask-Uploads==0.2.1
-Flask-WTF==0.14.3
-WTForms==2.3.3
+Flask-WTF==1.0.0
+WTForms==3.0.1
 flask-Table==0.5.0
-Werkzeug==1.0.1
+Werkzeug==2.0.3
 Jinja2==3.0.2
 passlib==1.7.4
 is-safe-url==1.0
