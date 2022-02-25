@@ -58,8 +58,3 @@ class UserManager(LoginManager):
             """
             return redirect(url_for("spotify_authorize"))
 
-        # TODO: get this to work so @fresh_login_required will call it
-        # @self.needs_refresh_handler
-        # def refresh_handler():
-        #     """:brief Called whenever `needs_refresh()` is called.
-        #         Useful for when authenticated user is stale and needs to get cleaned up."""

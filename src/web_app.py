@@ -4,7 +4,7 @@ from email.policy import default
 import json
 import flask
 from flask import Flask, session, render_template, request, redirect, flash, url_for, jsonify
-from flask_login import current_user, login_required, login_user, logout_user
+from flask_login import current_user, login_required, login_user, logout_user, fresh_login_required, login_fresh
 import werkzeug.serving  # needed to make production worthy app that's secure
 import secrets
 import logging
@@ -78,6 +78,23 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 threaded=is_threaded
             )
 
+    def does_need_refresh(self, view_func):
+            """Decorator function to check if a user's login is expired and needs to be refreshed
+            Add to ANY view that has @login_required.
+            \nFlask has no built in way to check if a user is active without calling it in EACH view function.
+            The decorator is a nice 1 line way of achieving the same task
+            """
+            def refresh_wrapper(*args, **kwargs):
+                # Refresh the user if they are currently in active / have old tokens
+                if not current_user.is_active():
+                    self.refresh_view = url_for("refresh_access_token")
+                    return self.needs_refresh()
+                else:
+                    return view_func(*args, **kwargs)
+            # Prevent it getting overrided by Flask when chaining
+            refresh_wrapper.__name__ = view_func.__name__
+            return refresh_wrapper
+
     def generateRoutes(self):
         self.create_homepage()
         self.create_api_routes()
@@ -93,11 +110,9 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
         @self._app.route("/authenticated", methods=["GET"])
         @login_required
+        @self.does_need_refresh
         def post_auth():
             """All users move from homepage to authenticated hompage (this one)"""
-            if not current_user.is_active():
-                self.refresh_view = url_for("refresh_access_token")
-                return self.needs_refresh()
             return render_template("homepage.html", title=self._title)
 
         @self._app.route("/logout", methods=["GET"])
@@ -112,8 +127,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         @self._app.route("/refresh_access_token", methods=["GET"])
         @login_required
         def refresh_access_token():
-            # if self._is_verbose is True:
-            print("refreshing access token")
+            if self._is_verbose is True:
+                print("refreshing access token")
             user_id = current_user.get_user_id()
 
             # user_id = current_user.get_user_id()
@@ -211,10 +226,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
         @self._app.route("/playlist_metrics", methods=["GET"])
         @login_required
+        @self.does_need_refresh
         def playlist_metrics():
-            if not current_user.is_active():
-                self.refresh_view = url_for("refresh_access_token")
-                return self.needs_refresh()
 
             user_playlists_dict = self.get_users_playlists(current_user.get_access_token())
 
@@ -231,20 +244,15 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         # Allow both bcause defaults to post, but when redirecting with next, use get
         @self._app.route("/analyze_playlist/genre/<string:playlist_id>", methods=["GET", "POST"])
         @login_required
+        @self.does_need_refresh
         def analyze_playlist_genre(playlist_id: str):
-            if not current_user.is_active():
-                self.refresh_view = url_for("refresh_access_token")
-                return self.needs_refresh()
-            # TODO: actually do this
             return redirect(url_for("post_auth", title=self._title))
 
         # Allow both bcause defaults to post, but when redirecting with next, use get
         @self._app.route("/analyze_playlist/artists/<string:playlist_id>", methods=["GET", "POST"])
         @login_required
+        @self.does_need_refresh
         def analyze_playlist_artists(playlist_id: str):
-            if not current_user.is_active():
-                self.refresh_view = url_for("refresh_access_token")
-                return self.needs_refresh()
             token = current_user.get_access_token()
             chart_data_artist = {}
             chart_data_album = {}
@@ -312,11 +320,9 @@ class WebApp(Scraper, UserManager, FlaskUtils):
     def create_processed_data_pages(self):
         @self._app.route("/charts/playlist_by_artist_analysis", methods=["GET"])
         @login_required
+        @self.does_need_refresh
         def show_playlist_by_artist_analysis():
             """:param data is a dictionary that contains the processed metrics"""
-            if not current_user.is_active():
-                self.refresh_view = url_for("refresh_access_token")
-                return self.needs_refresh()
 
             full_data = request.args.to_dict()
             playlist = full_data["playlist"]
