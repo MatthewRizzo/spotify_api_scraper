@@ -11,6 +11,9 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
 1. Follow [Setup Guide](#setup-guide)
 2. Run start script based on Operating System
    1. **Windows:** [start.bat](start.bat)
+      1. The first time the program is run, Windows Firewall might block the application.
+      2. Please click "Allow Access". This issue should not happen again.
+      3. When ending the program please do `Ctrl+C` then respond to `Terminate batch job (Y/N)?` with `y` and click enter.
    2. **Ubuntu/Debian/Windows Git-Bash:** [start script](start.sh)
 3. Go to [Homepage](<http://localhost:8080/>) - <http://localhost:8080/>
 4. Follow authorization prompts - sign into spotify
