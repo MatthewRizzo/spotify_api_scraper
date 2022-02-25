@@ -10,10 +10,12 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
 
 1. Follow [Setup Guide](#setup-guide)
 2. Run start script based on Operating System
-   1. **Windows:** [start.bat](start.bat)
-      1. The first time the program is run, Windows Firewall might block the application.
-      2. Please click "Allow Access". This issue should not happen again.
-      3. When ending the program please do `Ctrl+C` then respond to `Terminate batch job (Y/N)?` with `y` and click enter.
+   1. **Windows:** open a command prompt (windows button + 'cmd' + enter)
+      1. navigate to where you downloaded / extracted this code
+      2. [start.bat](start.bat)
+      3. The first time the program is run, Windows Firewall might block the application.
+      4. Please click "Allow Access". This issue should not happen again.
+      5. When ending the program please do `Ctrl+C` then respond to `Terminate batch job (Y/N)?` with `y` and click enter.
    2. **Ubuntu/Debian/Windows Git-Bash:** [start script](start.sh)
 3. Go to [Homepage](<http://localhost:8080/>) - <http://localhost:8080/>
 4. Follow authorization prompts - sign into spotify
@@ -38,7 +40,17 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
    2. Click your windows key and type `cmd` to open a command prompt
       1. Please run `py -0` to see a list of installed python versions.
       2. Please confirm that you see `"-3.9-64 *"` or `"-3.9-64 "`. If you do, installation was successful.
-2. This scrapper requires your Spotify account to have access to the Developer API's
+2. Donwload this code somewhere on your computer from GitHub
+   1. Click the `Download ZIP` Button
+      1. [Download Zip](docs/images/setup/download_from_git.jpg)
+   2. Extract the Zip folder to any folder you want
+      1. Go to your `Downloads` folder
+      2. Right click on the zip file you just donwloaded
+      3. Click `Extract All`
+      4. Select which folder to extract it to
+      5. Click the `Extract` Button on the widnow that pop'd up
+   3. Remember this directory!!
+3. This scrapper requires your Spotify account to have access to the Developer API's
    1. To do this, sign up for an app as directed here: <https://developer.spotify.com/documentation/general/guides/authorization/app-settings/>
    2. **Create an application** - <https://developer.spotify.com/dashboard/applications>
    3. Add a user to your application - your spotify user
@@ -56,12 +68,12 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
       3. Type in the url EXACTLY as shown in the image **(Step 1)**
       4. Click the add button whose position is marked in the image **(Step 2)**
       5. Feel free to add my GitHub link (but it's not necessary)
-3. Copy the template provided by [data/default_app_auth.json](data/default_app_auth.json) into `data/app_auth.json`
+4. Copy the template provided by [data/default_app_auth.json](data/default_app_auth.json) into `data/app_auth.json`
    1. **THIS IS IMPORTANT**. The application will search for this file. If it does not exist, you will be prompted to create it.
    2. Replace the default values with those associated with your Application
       1. see: <https://developer.spotify.com/documentation/general/guides/authorization/code-flow/>
       2. client_id = client id of your new registered application
-4. Run install scripts. Pick the correct one based on your operating system:
+5. Run install scripts. Pick the correct one based on your operating system:
    1. **Windows:**  [install/setup.bat](install/setup.bat)
       1. Note: this can be done through command prompt OR just double clicking on the file in `File Explorer`
    2. **Ubuntu/Debian/Windows Git-Bash:** [install/install.sh](install/install.sh)
