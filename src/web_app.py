@@ -194,7 +194,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                                       self._auth_info['client_secret'],
                                                       self._auth_redirect_uri)
             if access_token is None or refresh_token is None or valid_for_sec is None:
-                print("Error getting the access token. quitting")
+                print("Error getting the access token. Please try authorizing yourself again")
                 logout_user()
                 return redirect(url_for("index", title=self._title))
             user_id = self.get_user_id(access_token)

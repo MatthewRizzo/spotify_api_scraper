@@ -91,5 +91,3 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
 * Add the image of each playlist to the playlist table
 * have clicking on pie chart link to the artist/album itself
 * make end url's not show the long params
-* handle error if click cancel when authorizing user
-*
