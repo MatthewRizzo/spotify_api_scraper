@@ -92,7 +92,11 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
 3. . Run install scripts. Pick the correct one based on your operating system:
    1. **Windows:**  [install/setup.bat](install/setup.bat)
       1. Note: this can be done through command prompt OR just double clicking on the file in `File Explorer`
+         1. ![Gui install](docs/images/install/ex_running_install_gui.jpg)
+      2. If a warning from windows appears click "More Info" and then "Run Anyway"
+         1. ![Windows Warning](docs/images/install/windows_warning.jpg)
    2. **Ubuntu/Debian/Windows Git-Bash:** [install/install.sh](install/install.sh)
+   3. Allow the install script to finish
 
 ## TODO
 
