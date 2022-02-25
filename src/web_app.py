@@ -58,7 +58,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
         self.generateRoutes()
 
-        self.print_routes()
+        if self._is_verbose:
+            self.print_routes()
 
         # start up a Web Server. Non-blocking because threaded
         if self._is_debug:

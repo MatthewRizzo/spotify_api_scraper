@@ -20,7 +20,6 @@ class DataManager():
         self.expected_auth_path = Utils.get_data_dir_path() / self.expected_auth_filename
         self.expected_user_data_path = Utils.get_data_dir_path() / self.expected_user_data_filename
 
-        print(f"expected_auth_path = {self.expected_auth_path}")
         if self._check_if_auth_file_exists():
             pass
 
