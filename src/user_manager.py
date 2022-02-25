@@ -56,7 +56,7 @@ class UserManager(LoginManager):
                 \n@Brief: VERY important callback that redirects the user to log in if needed --
                 gets triggered by "@login_required" if page is accessed without logging in
             """
-            return redirect(url_for("refresh_access_token"))
+            return redirect(url_for("spotify_authorize"))
 
         # TODO: get this to work so @fresh_login_required will call it
         # @self.needs_refresh_handler
