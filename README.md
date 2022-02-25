@@ -42,12 +42,12 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
       2. Please confirm that you see `"-3.9-64 *"` or `"-3.9-64 "`. If you do, installation was successful.
 2. Donwload this code somewhere on your computer from GitHub
    1. Click the `Download ZIP` Button
-      1. [Download Zip](docs/images/setup/download_from_git.jpg)
+      1. ![Download Zip](docs/images/setup/download_from_git.jpg)
    2. Extract the Zip folder to any folder you want
       1. Go to your `Downloads` folder
       2. Right click on the zip file you just donwloaded
       3. Click `Extract All`
-      4. Select which folder to extract it to
+      4. Select which folder to extract it to by clicking `Browse`
       5. Click the `Extract` Button on the widnow that pop'd up
    3. Remember this directory!!
 3. This scrapper requires your Spotify account to have access to the Developer API's
@@ -55,16 +55,16 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
    2. **Create an application** - <https://developer.spotify.com/dashboard/applications>
    3. Add a user to your application - your spotify user
       1. click **Users and Access**
-         1. [Users and Access](docs/images/setup/users_and_access_button.png)
+         1. ![Users and Access](docs/images/setup/users_and_access_button.png)
       2. click **Add New User**
-         1. [Add New User](docs/images/setup/add_user_button.jpg)
+         1. ![Add New User](docs/images/setup/add_user_button.jpg)
       3. Enter your Full Name and the email address associated with your spotify account
    4. Add Redirect URI's (steps follow)
       1. Click Edit Settings
-         1. [Edit Settings](docs/images/setup/edit_settings_button.jpg)
+         1. ![Edit Settings](docs/images/setup/edit_settings_button.jpg)
       2. Go to **Redirect URI's field**
          1. Enter `http://localhost:8080/redirect_after_auth` (see below for example)
-         2. [Redirect URI's field](docs/images/setup/add_uri_callback.jpg)
+         2. ![Redirect URI's field](docs/images/setup/add_uri_callback.jpg)
       3. Type in the url EXACTLY as shown in the image **(Step 1)**
       4. Click the add button whose position is marked in the image **(Step 2)**
       5. Feel free to add my GitHub link (but it's not necessary)
@@ -73,6 +73,10 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
    2. Replace the default values with those associated with your Application
       1. see: <https://developer.spotify.com/documentation/general/guides/authorization/code-flow/>
       2. client_id = client id of your new registered application
+      3. Client Secret - also comes from your application.
+         1. **DO NOT SHARE THIS WITH OTHERS**
+      4. The values look like this in your app's webpage
+         1. ![App Auth Info](docs/images/setup/auth_json_values.jpg)
 5. Run install scripts. Pick the correct one based on your operating system:
    1. **Windows:**  [install/setup.bat](install/setup.bat)
       1. Note: this can be done through command prompt OR just double clicking on the file in `File Explorer`
