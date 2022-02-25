@@ -1,6 +1,7 @@
 from typing import List
 from flask import Flask, url_for
 from werkzeug.routing import Rule
+from typing import Dict
 
 class FlaskUtils():
     app = None
@@ -20,18 +21,13 @@ class FlaskUtils():
         available_links.sort()
         return available_links
 
-    def get_valid_endpoints(self) -> list:
-        """Returns a list of all the valid GET endpoints for this server. JUST the endpoints"""
-        endpoints = []
-        for rule in self.cls.app.url_map.iter_rules():
-            # Filter out non-get rules and rules with params
-            # rule is of type Rule
-            if "GET" in rule.methods and self._has_no_empty_params(rule):
-                base_url = url_for(rule.endpoint, **(rule.defaults or {}))
-                full_url = base_url + "/" + rule.endpoint if base_url != '/' else ('/'+rule.endpoint)
-                endpoints.append(full_url)
-        print(endpoints)
-        return endpoints
+    def get_valid_endpoints(self) -> Dict:
+        """Returns a dict of all the valid GET endpoints for this server. starts from / and goes till end.
+
+        """
+        create_url = lambda endpoint: f"{endpoint}"
+        all_links = list(map(create_url, self.cls.app.url_map.iter_rules()))
+        return all_links
 
     def generate_site_links(self):
         """Make a route that is used to get the available GET links for the server"""
