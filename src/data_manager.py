@@ -29,13 +29,14 @@ class DataManager():
         with open(str(self.expected_auth_path)) as auth_file:
             return json.load(auth_file)
 
-    def save_users_access_token(self, access_token: int, user_id: int, valid_until: datetime) -> bool:
+    def save_users_access_token(self, access_token: int, user_id: int, valid_until: datetime, refresh_token : str) -> bool:
         """Stores the access token for the given user id within the user json.
         If the user already exists, replaces their old access_token value
 
         Args:
             access_token (int): the access token after authentication for this user
             user_id (int): User ID ACCORDING to spotify
+            refresh_token (str): The refresh token given by spotify on user auth to make refreshing easier
 
         Returns:
             bool: True on success
@@ -46,7 +47,8 @@ class DataManager():
             data_json = json.load(user_file)
 
         data_json[user_id] = {'access_token': access_token,
-                              'valid_until': valid_until}
+                              'valid_until': valid_until,
+                              'refresh_token': refresh_token}
 
         # replace the data
         with open(pathlib.Path(self.expected_user_data_path), 'w') as user_file:
@@ -54,7 +56,7 @@ class DataManager():
 
         return True
 
-    def get_users_access_token(self, user_id) -> Optional[int]:
+    def get_users_access_token(self, user_id) -> Optional[str]:
         """Gets the user's access token.
         :return int if access token found, None otherwise"""
         user_dict = self._get_user_dict(user_id)
@@ -63,18 +65,45 @@ class DataManager():
         else:
             return None
 
+    def get_users_refresh_token(self, user_id) -> Optional[str]:
+        user_dict = self._get_user_dict(user_id)
+        if user_dict is not None:
+            refresh_token = user_dict['refresh_token']
+            return refresh_token
+        else:
+            return None
+
+    def remove_users_refresh_token(self, user_id) -> bool:
+        """Removes a users refresh token. useful on logout"""
+        # Read in the current json
+        data_json = {}
+        with open(pathlib.Path(self.expected_user_data_path), 'r') as user_file:
+            data_json = json.load(user_file)
+
+        if user_id in data_json:
+            data_json[user_id]['refresh_token'] = None
+
+        # replace the data
+        with open(pathlib.Path(self.expected_user_data_path), 'w') as user_file:
+            json.dump(data_json, user_file, indent=2)
+
+        return True
+
     def is_token_valid(self, user_id) -> bool:
         """Given a user'is id, determines if their token is invalid.
         :Return True if expired, False otherwise."""
         user_dict = self._get_user_dict(user_id)
-        token_expire_time_formatted = user_dict['valid_until']
-        expire_time = datetime.strptime(token_expire_time_formatted, "%m/%d/%Y %H:%M:%S")
+        if user_dict is not None:
+            token_expire_time_formatted = user_dict['valid_until']
+            expire_time = datetime.strptime(token_expire_time_formatted, "%m/%d/%Y %H:%M:%S")
 
-        present = datetime.now()
-        if present > expire_time:
-            return False
+            present = datetime.now()
+            if present > expire_time:
+                return False
+            else:
+                return True
         else:
-            return True
+            return False
 
 
     def _check_if_auth_file_exists(self) -> bool:
@@ -90,17 +119,16 @@ class DataManager():
     def _create_user_file_if_needed(self):
         # Create the file if it doesn't exist
         if not os.path.exists(self.expected_user_data_path):
-            print("creating user file")
             with io.open(self.expected_user_data_path, 'w') as user_file:
                 user_file.write(json.dumps({}))
 
     def _get_user_dict(self, user_id) -> dict:
+        res = None
         with open(pathlib.Path(self.expected_user_data_path), 'r') as user_file:
-            data_json = json.load(user_file)
+            data_json = dict(json.load(user_file))
             if user_id in data_json:
-                return data_json[user_id]
-            else:
-                return None
+                res = dict(data_json[user_id])
+        return res
 
 if __name__ == "__main__":
     data_parser = DataManager()
