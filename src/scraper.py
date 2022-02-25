@@ -10,10 +10,10 @@ import random
 from utils import Utils
 
 class Scraper():
-    def __init__(self) -> None:
+    def __init__(self, is_verbose: bool) -> None:
         """Class responsible for sending requests to Spotify API's and building up the data files as needed
         """
-        pass
+        self._is_verbose = is_verbose
 
     def get_authenticate_url(self, client_id : str, redirect_uri : str) -> str:
         """Start the process of Login/authenticate the user
@@ -68,7 +68,9 @@ class Scraper():
 
         access_token = access_token_res_dict['access_token']
         valid_for_sec = access_token_res_dict['expires_in']
-        print(f"token {access_token} is valid for {valid_for_sec} seconds")
+
+        if self._is_verbose:
+            print(f"Got a new access token valid for {valid_for_sec} seconds")
         return access_token_res_dict
 
     def get_user_id(self, access_token) -> str:

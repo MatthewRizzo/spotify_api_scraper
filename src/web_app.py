@@ -32,6 +32,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         # Create the user manager with a link to the app itself
         UserManager.__init__(self, self._app)
         FlaskUtils.__init__(self, self._app, port)
+        Scraper.__init__(self, self._is_verbose)
 
         self._auth_info = self._data_manager.get_auth_info()
 
@@ -133,7 +134,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             self._data_manager.save_users_access_token(
                 access_token, user_id, end_valid_time)
 
-            user = User(user_id, access_token)
+            user = User(user_id)
             login_user(user)
             return redirect(url_for("index", title=self._title))
 
@@ -142,7 +143,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         def spotify_authorize():
             # only auth if needed
             # TODO: add OR for when token is expired
-            if not current_user.is_authenticated:
+            if not current_user.is_authenticated or not current_user.has_valid_user_token():
                 self._auth_redirect_uri = self.base_route + url_for('redirect_after_auth')
 
                 auth_url = self.get_authenticate_url(self._auth_info['client_id'], self._auth_redirect_uri)
