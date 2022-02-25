@@ -9,6 +9,7 @@ import sys
 
 #------------------------------Project Imports-----------------------------#
 from utils import Utils
+from data_manager import DataManager
 
 class DataManager():
     def __init__(self) -> None:
@@ -105,6 +106,12 @@ class DataManager():
         else:
             return False
 
+    def does_user_exist(self, user_id) ->bool:
+        """True if user exists, false otherwise"""
+        data = None
+        with open(pathlib.Path(self.expected_user_data_path), 'r') as user_file:
+            data = dict(json.load(user_file))
+        return user_id in data
 
     def _check_if_auth_file_exists(self) -> bool:
         """Ensures the non-default auth file was created properly.

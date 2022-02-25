@@ -9,12 +9,13 @@ import os
 
 #-----------------------------3RD PARTY DEPENDENCIES-----------------------------#
 # from werkzeug.contrib.securecookie import SecureCookie
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, request
 from flask_login import LoginManager, logout_user
+import requests
 
 #--------------------------------OUR DEPENDENCIES--------------------------------#
 from user import User
-
+from data_manager import DataManager
 
 class UserManager(LoginManager):
     def __init__(self, app: Flask):
@@ -25,6 +26,7 @@ class UserManager(LoginManager):
 
         # create login manager object
         LoginManager.__init__(self, self.flaskApp)
+        self._data_manager = DataManager()
 
         self.createLoginManager()
 
@@ -33,7 +35,6 @@ class UserManager(LoginManager):
             \n@Brief: Helper function that creates all the necessary login manager attributes (callbacks)
             \n@Note: Wrapper to provide closure for `self`
         """
-
         @self.user_loader
         def loadUser(user_id):
             """
@@ -42,13 +43,12 @@ class UserManager(LoginManager):
                 \n@Param: user_id - The user's unique token id
                 \n@Return: Reference to the User class related to this userToken
             """
-            possible_user = User(user_id)
+            possible_user = None
+            if self._data_manager.does_user_exist():
+                possible_user = User(user_id)
 
-            # If the access token is None, user is not registered, be sure to log them in
-            if not possible_user.is_active():
-                return None
+
             return possible_user
-
 
         @self.unauthorized_handler
         def onNeedToLogIn():
@@ -56,4 +56,10 @@ class UserManager(LoginManager):
                 \n@Brief: VERY important callback that redirects the user to log in if needed --
                 gets triggered by "@login_required" if page is accessed without logging in
             """
-            return redirect(url_for("index"))
+            return redirect(url_for("refresh_access_token"))
+
+        # TODO: get this to work so @fresh_login_required will call it
+        # @self.needs_refresh_handler
+        # def refresh_handler():
+        #     """:brief Called whenever `needs_refresh()` is called.
+        #         Useful for when authenticated user is stale and needs to get cleaned up."""
