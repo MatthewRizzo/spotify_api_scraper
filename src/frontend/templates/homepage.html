@@ -9,7 +9,7 @@
 <body>
     {% block content %}
 
-    {% if current_user.is_authenticated == 1 %}
+    {% if current_user.is_authenticated  and current_user.is_active %}
         <div id="is-authed">User Authenticated!</div>
     {% else %}
         <div id="not-authed">User Not Authenticated!</div>

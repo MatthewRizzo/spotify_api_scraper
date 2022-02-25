@@ -33,4 +33,8 @@ class User(UserMixin):
     def get_access_token(self):
         return self.access_token
 
+    def is_active(self) -> bool:
+        valid_token = self.has_valid_user_token()
+        return valid_token
+
 

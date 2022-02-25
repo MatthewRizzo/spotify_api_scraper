@@ -34,7 +34,7 @@
                 <!-- left side of navbar-->
                 <div class="navbar-menu">
                     <div class="navbar-start">
-                        {% if current_user.is_authenticated %}
+                        {% if current_user.is_authenticated and current_user.is_active %}
                         <div class="navbar-item">
                             <div class="buttons">
                                 <a href="{{ url_for('logout') }}" class="button is-link">
@@ -54,11 +54,11 @@
 
                 <!-- right side of navbar-->
                 <div class="navbar-end">
-                    {% if not current_user.is_authenticated %}
+                    {% if not current_user.is_authenticated and not current_user.is_active %}
                     <div class="navbar-item">
                         <div class="buttons">
                             <a href="{{ url_for('spotify_authorize') }}" class="button is-link">
-                                Authorize
+                                Login To Spotify
                             </a>
                         </div>
                     </div>

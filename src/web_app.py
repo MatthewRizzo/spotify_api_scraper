@@ -86,7 +86,6 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
     def create_homepage(self):
         @self._app.route("/", methods=["GET"])
-        @login_required
         def index():
             return render_template("homepage.html", title=self._title)
 
@@ -142,8 +141,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         @self._app.route("/spotify_authorize", methods=["GET", "POST"])
         def spotify_authorize():
             # only auth if needed
-            # TODO: add OR for when token is expired
-            if not current_user.is_authenticated or not current_user.has_valid_user_token():
+            if not current_user.is_authenticated or not current_user.is_active():
                 self._auth_redirect_uri = self.base_route + url_for('redirect_after_auth')
 
                 auth_url = self.get_authenticate_url(self._auth_info['client_id'], self._auth_redirect_uri)
@@ -152,6 +150,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 return redirect(url_for("index", title=self._title))
 
         @self._app.route("/playlist_metrics", methods=["GET"])
+        @login_required
         def playlist_metrics():
             user_playlists_dict = self.get_users_playlists(current_user.get_access_token())
             # return redirect(url_for("index", title=self._title))
@@ -166,11 +165,13 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                    playlist_table=escaped_playlist_table)
 
         @self._app.route("/analyze_playlist/genre/<string:playlist_id>", methods=["POST"])
+        @login_required
         def analyze_playlist_genre(playlist_id: str):
             # TODO: actually do this
             return redirect(url_for("index", title=self._title))
 
         @self._app.route("/analyze_playlist/artists/<string:playlist_id>", methods=["POST"])
+        @login_required
         def analyze_playlist_artists(playlist_id: str):
             token = current_user.get_access_token()
             chart_data_artist = {}
@@ -238,6 +239,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
     def create_processed_data_pages(self):
         @self._app.route("/charts/playlist_by_artist_analysis", methods=["GET"])
+        @login_required
         def show_playlist_by_artist_analysis():
             """:param data is a dictionary that contains the processed metrics"""
             full_data = request.args.to_dict()

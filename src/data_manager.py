@@ -72,7 +72,6 @@ class DataManager():
 
         present = datetime.now()
         if present > expire_time:
-            print("token expired")
             return False
         else:
             return True
