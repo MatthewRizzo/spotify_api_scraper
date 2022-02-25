@@ -8,10 +8,10 @@
 from flask_login import UserMixin
 
 #--------------------------------OUR DEPENDENCIES--------------------------------#
-
+from data_manager import DataManager
 
 class User(UserMixin):
-    def __init__(self, userId, access_token):
+    def __init__(self, userId):
         """
             Custom user class that extends the expected class from LoginManager
             \n@Brief: Initializes a User with the most basic info needed
@@ -21,11 +21,14 @@ class User(UserMixin):
         # store the user's id for use when object is accessed (via 'current_user')
         # they can use the id for more queries
         self.id = str(userId)
-        self.access_token = access_token
+        self._data_manager = DataManager()
+        self.access_token = self._data_manager.get_users_access_token(userId)
+
 
     def has_valid_user_token(self) -> bool:
-        # TODO: make a check to see if it is still valid
-        return self.access_token is not None
+        is_valid = self._data_manager.is_token_valid(self.id)
+        is_valid &= self.access_token is not None
+        return is_valid
 
     def get_access_token(self):
         return self.access_token

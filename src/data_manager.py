@@ -63,7 +63,7 @@ class DataManager():
         else:
             return None
 
-    def _is_token_valid(self, user_id) -> bool:
+    def is_token_valid(self, user_id) -> bool:
         """Given a user'is id, determines if their token is invalid.
         :Return True if expired, False otherwise."""
         user_dict = self._get_user_dict(user_id)
@@ -72,6 +72,7 @@ class DataManager():
 
         present = datetime.now()
         if present > expire_time:
+            print("token expired")
             return False
         else:
             return True
