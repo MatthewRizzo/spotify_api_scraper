@@ -56,7 +56,10 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
 
 ## TODO
 
+* try merging last 2 routes into 1 render template for pie chart
 * get % genre in playlist
+* implement state check during auth
+  * better secure against XSS
 * BETTER way to timeout token for user
 * Add the image of each playlist to the playlist table
 * better handle when track has feat artists
