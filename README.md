@@ -29,10 +29,23 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
 ## Setup Guide
 
 1. This scrapper requires your Spotify account to have access to the Developer API's
-
-* To do this, sign up for an app as directed here: <https://developer.spotify.com/documentation/general/guides/authorization/app-settings/>
-* **Create an application** - <https://developer.spotify.com/dashboard/applications>
-* *Maybe*: Add a user to your application - your user
+   1. To do this, sign up for an app as directed here: <https://developer.spotify.com/documentation/general/guides/authorization/app-settings/>
+   2. **Create an application** - <https://developer.spotify.com/dashboard/applications>
+   3. Add a user to your application - your spotify user
+      1. click **Users and Access**
+         1. [Users and Access](docs/images/setup/users_and_access_button.png)
+      2. click **Add New User**
+         1. [Add New User](docs/images/setup/add_user_button.jpg)
+      3. Enter your Full Name and the email address associated with your spotify account
+   4. Add Redirect URI's (steps follow)
+      1. Click Edit Settings
+         1. [Edit Settings](docs/images/setup/edit_settings_button.jpg)
+      2. Go to **Redirect URI's field**
+         1. Enter `http://localhost:8080/redirect_after_auth` (see below for example)
+         2. [Redirect URI's field](docs/images/setup/add_uri_callback.jpg)
+      3. Type in the url EXACTLY as shown in the image **(Step 1)**
+      4. Click the add button whose position is marked in the image **(Step 2)**
+      5. Feel free to add my GitHub link (but it's not necessary)
 
 2. Copy the template provided by [data/default_app_auth.json](data/default_app_auth.json) into `data/app_auth.json`
    1. **THIS IS IMPORTANT**. The application will search for this file. If it does not exist, you will be prompted to create it.
