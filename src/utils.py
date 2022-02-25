@@ -2,6 +2,7 @@
 import json
 import pathlib
 from typing import Tuple
+from datetime import datetime, timedelta
 
 
 class Utils():
@@ -91,3 +92,11 @@ class Utils():
 
 
 
+    @classmethod
+    def calc_end_time(cls, start_time : datetime, time_diff_sec : float) -> datetime:
+        """Given a start time and time difference in seconds,
+            calculates the end datetime in %m/%d/%Y %H:%M:%S notation"""
+
+        datetime_delta = timedelta(seconds=time_diff_sec)
+        end_time = (start_time + datetime_delta).strftime("%m/%d/%Y %H:%M:%S")
+        return end_time
