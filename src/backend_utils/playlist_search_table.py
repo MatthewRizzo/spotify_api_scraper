@@ -6,6 +6,7 @@ from flask import url_for, escape
 from jinja2 import Markup, escape
 
 from utils import Utils
+import constants
 
 class PlaylistSearchTable(Table):
     classes = ["table", "is-bordered", "is-striped",
@@ -13,7 +14,7 @@ class PlaylistSearchTable(Table):
     playlist_name = Col('Playlist Name')
     playlist_desc = Col('Playlist Description')
     analyze_genre = ButtonCol(
-        name='Analyze Playlist By Genres',
+        name=constants.PLAYLIST_TABLE_GENRE_COLUMN,
         endpoint="analyze_playlist_genre",
         url_kwargs=dict(
             playlist_id="playlist_id"
@@ -23,7 +24,7 @@ class PlaylistSearchTable(Table):
     )
 
     analyze_artists = ButtonCol(
-        name='Analyze Playlist By Artists and Albums',
+        name=constants.PLAYLIST_TABLE_ARTIST_COLUMN,
         endpoint="analyze_playlist_artists",
         url_kwargs=dict(
             playlist_id="playlist_id"
