@@ -242,17 +242,10 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                    playlist_table=escaped_playlist_table)
 
         # Allow both bcause defaults to post, but when redirecting with next, use get
-        @self._app.route("/analyze_playlist/genre/<string:playlist_id>", methods=["GET", "POST"])
+        @self._app.route("/analyze_playlist/<string:playlist_id>", methods=["GET", "POST"])
         @login_required
         @self.does_need_refresh
-        def analyze_playlist_genre(playlist_id: str):
-            return redirect(url_for("post_auth", title=self._title))
-
-        # Allow both bcause defaults to post, but when redirecting with next, use get
-        @self._app.route("/analyze_playlist/artists/<string:playlist_id>", methods=["GET", "POST"])
-        @login_required
-        @self.does_need_refresh
-        def analyze_playlist_artists(playlist_id: str):
+        def analyze_playlist(playlist_id: str):
             token = current_user.get_access_token()
             chart_data_artist = {}
             chart_data_album = {}
@@ -312,7 +305,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             # Trust me, I know this isn't ideal (especially the escaping),
             #   but things render ugly if done in response to a POST
             # See: https://stackoverflow.com/questions/70977131/flask-render-template-after-client-post-request/70983151
-            return redirect(url_for("show_playlist_by_artist_analysis",
+            return redirect(url_for("show_playlist_analysis",
                                     artist_data=chart_data_artist,
                                     album_data=chart_data_album,
                                     playlist=playlist_name,
@@ -321,10 +314,10 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                     num_albums=num_albums))
 
     def create_processed_data_pages(self):
-        @self._app.route("/charts/playlist_by_artist_analysis", methods=["GET"])
+        @self._app.route("/charts/playlist_analysis", methods=["GET"])
         @login_required
         @self.does_need_refresh
-        def show_playlist_by_artist_analysis():
+        def show_playlist_analysis():
             """:param data is a dictionary that contains the processed metrics"""
 
             full_data = request.args.to_dict()

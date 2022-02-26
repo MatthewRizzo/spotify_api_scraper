@@ -16,7 +16,7 @@ class PlaylistSearchTable(Table):
 
     analyze_artists = ButtonCol(
         name=constants.PLAYLIST_TABLE_ARTIST_COLUMN,
-        endpoint="analyze_playlist_artists",
+        endpoint="analyze_playlist",
         url_kwargs=dict(
             playlist_id="playlist_id"
         ),
