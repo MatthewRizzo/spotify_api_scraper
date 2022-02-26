@@ -4,19 +4,18 @@ import pathlib
 from typing import Tuple
 from datetime import datetime, timedelta
 
+#------------------------------Project Imports-----------------------------#
+import constants
 
 class Utils():
     """Uility class to handle common things such as pathing"""
     src_dir_path = pathlib.Path(__file__).parent.resolve()
     root_dir_path = src_dir_path.parent.resolve()
-    path_to_data_dir = pathlib.Path(root_dir_path / "data")
-    frontend_dir_path = pathlib.Path(src_dir_path / "frontend")
-    static_dir_path = pathlib.Path(frontend_dir_path / "static")
-    templates_dir_path = pathlib.Path(frontend_dir_path / "templates")
+    path_to_data_dir = pathlib.Path(root_dir_path / constants.DATA_DIR_NAME)
+    frontend_dir_path = pathlib.Path(src_dir_path / constants.FRONTEND_DIR_NAME)
+    static_dir_path = pathlib.Path(frontend_dir_path / constants.STATIC_DIR_NAME)
+    templates_dir_path = pathlib.Path(frontend_dir_path / constants.TEMPLATE_DIR_NAME)
 
-    # url related stuff
-    base_spotify_uri = "https://api.spotify.com"
-    base_spotify_accounts_uri = 'https://accounts.spotify.com'
 
     @classmethod
     def get_src_dir_path(cls) -> pathlib.Path:
@@ -43,25 +42,14 @@ class Utils():
         return cls.templates_dir_path
 
     @classmethod
-    def get_base_spotify_api_uri(cls) -> pathlib.Path:
-        return cls.base_spotify_uri
-
-    @classmethod
     def get_base_spotify_accounts_uri(cls) -> pathlib.Path:
-        return cls.base_spotify_accounts_uri
+        return constants.BASE_SPOTIFY_ACCOUNTS_URI
 
     @classmethod
     def escape_html_special_char(cls, str_to_escape: str) -> str:
         """:return Escaped string"""
-        html_escape_table = {
-            "&": "&amp;",
-            '"': "&quot;",
-            "'": "&apos;",
-            ">": "&gt;",
-            "<": "&lt;",
-            "\"": '\\"'
-        }
-        return "".join(html_escape_table.get(c, c) for c in str_to_escape)
+        escape_char_map = constants.HTML_CHAR_ESCAPE_TABLE
+        return "".join(escape_char_map.get(c, c) for c in str_to_escape)
 
     @classmethod
     def validate_key_format(cls, dict_to_check: dict, single_quote_escape_seq: str, double_quote_escape_seq: str) -> dict:
