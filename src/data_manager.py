@@ -9,12 +9,13 @@ import sys
 
 #------------------------------Project Imports-----------------------------#
 from utils import Utils
+import constants
 
 class DataManager():
     def __init__(self) -> None:
-        self.default_auth_filename = "default_app_auth.json"
-        self.expected_auth_filename = "app_auth.json"
-        self.expected_user_data_filename = "user_info.json"
+        self.default_auth_filename = constants.DEFAULT_AUTH_FILENAME
+        self.expected_auth_filename = constants.EXPECTED_AUTH_FILENAME
+        self.expected_user_data_filename = constants.EXPECTED_USER_DATA_FILENAME
 
         self.default_auth_path = Utils.get_data_dir_path() / self.default_auth_filename
         self.expected_auth_path = Utils.get_data_dir_path() / self.expected_auth_filename
