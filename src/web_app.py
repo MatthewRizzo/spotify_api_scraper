@@ -22,6 +22,7 @@ from user import User
 from backend_utils.playlist_search_table import PlaylistSearchTable, PlaylistSearchCell, create_playlist_search_cells
 from backend_utils.flask_utils import FlaskUtils
 import constants
+from analyzer import Analyzer
 
 class WebApp(Scraper, UserManager, FlaskUtils):
     def __init__(self, port: int, is_debug: bool, data_manager: DataManager, is_verbose: bool):
@@ -35,6 +36,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         UserManager.__init__(self, self._app)
         FlaskUtils.__init__(self, self._app, port)
         Scraper.__init__(self, self._is_verbose)
+        self.analyzer = Analyzer(self._is_verbose)
 
         self._auth_info = self._data_manager.get_auth_info()
 
@@ -249,7 +251,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             token = current_user.get_access_token()
             chart_data_artist = {}
             chart_data_album = {}
-            track_list, playlist_name, total_num_tracks = self.get_songs_from_playlist(playlist_id, token)
+            raw_track_list, playlist_name, total_num_tracks = self.get_songs_from_playlist(playlist_id, token)
 
             # Used to remove ' from key names until it is safe to put them back in
             # eventually the ' wrapped around key's are ALL changed to ",
@@ -261,33 +263,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             if self._is_verbose:
                 print(f"playlist name = {playlist_name}")
 
-            for raw_track in track_list:
-                processed_track = self.parse_raw_track(raw_track)
-
-                cur_track = processed_track["track_name"]
-                cur_album = str(processed_track["album"])
-                cur_album = cur_album.replace("\'", single_quote_escape_seq).replace('\"', double_quote_escape_seq)
-
-                if cur_album == " " or cur_album == '':
-                    cur_album = constants.DEFAULT_NO_ALBUM_NAME_MSG
-
-                cur_artist = str(processed_track["artists"][0])
-                cur_artist = cur_artist.replace("\'", single_quote_escape_seq).replace(
-                    '\"', double_quote_escape_seq)
-                if self._is_verbose:
-                    print("Track {} by {} from their {} album".format(
-                        cur_track, cur_artist, cur_album
-                    ))
-
-                # do metric calc for each artist and album
-                # TODO: better handle features
-                cur_num_tracks_by_artist = chart_data_artist.get(cur_artist, 0)
-                cur_num_tracks_by_artist += 1
-                chart_data_artist[cur_artist] = cur_num_tracks_by_artist
-
-                cur_num_tracks_in_album = chart_data_album.get(cur_album, 0)
-                cur_num_tracks_in_album += 1
-                chart_data_album[cur_album] = cur_num_tracks_in_album
+            chart_data_artist, chart_data_album = self.analyzer.analyze_raw_track_list(raw_track_list)
 
             num_artists = len(list(chart_data_artist.keys()))
             num_albums = len(list(chart_data_album.keys()))
