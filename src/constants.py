@@ -13,9 +13,8 @@ TEMPLATE_DIR_NAME =             "templates"
 
 
 # Web Page / Display Constants
-PLAYLIST_TABLE_GENRE_COLUMN =   "Analyze Playlist By Genres"
 PLAYLIST_TABLE_ARTIST_COLUMN =  "Analyze Playlist By Artists and Albums"
-DEFAULT_NO_ALBUM_NAME_MSG = "Album Unknown"
+DEFAULT_NO_ALBUM_NAME_MSG =     "Album Unknown"
 
 # URL/URI Related constants
 SPOTIFY_API_BASE_URI =          "https://api.spotify.com"

@@ -13,15 +13,6 @@ class PlaylistSearchTable(Table):
                "is-hoverable", "is-fullwidth"]
     playlist_name = Col('Playlist Name')
     playlist_desc = Col('Playlist Description')
-    analyze_genre = ButtonCol(
-        name=constants.PLAYLIST_TABLE_GENRE_COLUMN,
-        endpoint="analyze_playlist_genre",
-        url_kwargs=dict(
-            playlist_id="playlist_id"
-        ),
-        # change class of cells
-        button_attrs={"class": "button is-link"}
-    )
 
     analyze_artists = ButtonCol(
         name=constants.PLAYLIST_TABLE_ARTIST_COLUMN,
