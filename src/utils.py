@@ -86,5 +86,5 @@ class Utils():
             calculates the end datetime in %m/%d/%Y %H:%M:%S notation"""
 
         datetime_delta = timedelta(seconds=time_diff_sec)
-        end_time = (start_time + datetime_delta).strftime("%m/%d/%Y %H:%M:%S")
+        end_time = (start_time + datetime_delta).strftime(constants.TIME_FORMAT_STR)
         return end_time

@@ -96,7 +96,8 @@ class DataManager():
         user_dict = self._get_user_dict(user_id)
         if user_dict is not None:
             token_expire_time_formatted = user_dict['valid_until']
-            expire_time = datetime.strptime(token_expire_time_formatted, "%m/%d/%Y %H:%M:%S")
+            time_frmt_str = constants.TIME_FORMAT_STR
+            expire_time = datetime.strptime(token_expire_time_formatted, time_frmt_str)
 
             present = datetime.now()
             if present > expire_time:

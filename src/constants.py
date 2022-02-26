@@ -28,3 +28,6 @@ HTML_CHAR_ESCAPE_TABLE = {
     "<": "&lt;",
     "\"": '\\"'
 }
+
+# Time Related Constants
+TIME_FORMAT_STR = "%m/%d/%Y %H:%M:%S"
