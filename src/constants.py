@@ -1,4 +1,6 @@
 """File used to prevent the burying of constants / magic numbers"""
+# Overall Project constants
+PROJECT_NAME = "Spotify API Scraper Parser"
 
 # File / path constants
 DEFAULT_AUTH_FILENAME =         "default_app_auth.json"
@@ -7,12 +9,13 @@ EXPECTED_USER_DATA_FILENAME =   "user_info.json"
 DATA_DIR_NAME =                 "data"
 FRONTEND_DIR_NAME =             "frontend"
 STATIC_DIR_NAME =               "static"
-TEMPLATE_DIR_NAME = "templates"
+TEMPLATE_DIR_NAME =             "templates"
 
 
 # Web Page / Display Constants
 PLAYLIST_TABLE_GENRE_COLUMN =   "Analyze Playlist By Genres"
 PLAYLIST_TABLE_ARTIST_COLUMN =  "Analyze Playlist By Artists and Albums"
+DEFAULT_NO_ALBUM_NAME_MSG = "Album Unknown"
 
 # URL/URI Related constants
 SPOTIFY_API_BASE_URI =          "https://api.spotify.com"
@@ -49,6 +52,9 @@ HTML_CHAR_ESCAPE_TABLE = {
     "<": "&lt;",
     "\"": '\\"'
 }
+
+SINGLE_QUOTE_ESCAPE_SEQ = "#$%^&*!"
+DOUBLE_QUOTE_ESCAPE_SEQ = "#$%^$^&*!"
 
 # Time Related Constants
 TIME_FORMAT_STR = "%m/%d/%Y %H:%M:%S"

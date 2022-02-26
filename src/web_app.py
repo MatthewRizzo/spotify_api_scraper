@@ -21,12 +21,12 @@ from data_manager import DataManager
 from user import User
 from backend_utils.playlist_search_table import PlaylistSearchTable, PlaylistSearchCell, create_playlist_search_cells
 from backend_utils.flask_utils import FlaskUtils
-
+import constants
 
 class WebApp(Scraper, UserManager, FlaskUtils):
     def __init__(self, port: int, is_debug: bool, data_manager: DataManager, is_verbose: bool):
 
-        self._title = "Spotify API Scraper Parser"
+        self._title = constants.PROJECT_NAME
         self._app = Flask(self._title)
         self._data_manager = data_manager
         self._is_verbose = is_verbose
@@ -262,8 +262,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             # eventually the ' wrapped around key's are ALL changed to ",
             # but that will also change ' in the keys to " which is BAD for parsing.
             # change the ' to know what they are later
-            single_quote_escape_seq = "#$%^&*!"
-            double_quote_escape_seq = "#$%^$^&*!"
+            single_quote_escape_seq = constants.SINGLE_QUOTE_ESCAPE_SEQ
+            double_quote_escape_seq = constants.DOUBLE_QUOTE_ESCAPE_SEQ
 
             if self._is_verbose:
                 print(f"playlist name = {playlist_name}")
@@ -276,10 +276,11 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 cur_album = cur_album.replace("\'", single_quote_escape_seq).replace('\"', double_quote_escape_seq)
 
                 if cur_album == " " or cur_album == '':
-                    cur_album = "Album Name Not Given"
+                    cur_album = constants.DEFAULT_NO_ALBUM_NAME_MSG
 
                 cur_artist = str(processed_track["artists"][0])
-                cur_artist = cur_artist.replace("\'", single_quote_escape_seq).replace('\"', double_quote_escape_seq)
+                cur_artist = cur_artist.replace("\'", single_quote_escape_seq).replace(
+                    '\"', double_quote_escape_seq)
                 if self._is_verbose:
                     print("Track {} by {} from their {} album".format(
                         cur_track, cur_artist, cur_album
@@ -311,8 +312,6 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                     artist_data=chart_data_artist,
                                     album_data=chart_data_album,
                                     playlist=playlist_name,
-                                    single_quote_escape_seq=single_quote_escape_seq,
-                                    double_quote_escape_seq=double_quote_escape_seq,
                                     num_tracks=total_num_tracks,
                                     num_artists=num_artists,
                                     num_albums=num_albums))
@@ -326,8 +325,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
             full_data = request.args.to_dict()
             playlist = full_data["playlist"]
-            single_quote_escape_seq = full_data["single_quote_escape_seq"]
-            double_quote_escape_seq = full_data["double_quote_escape_seq"]
+            single_quote_escape_seq = constants.SINGLE_QUOTE_ESCAPE_SEQ
+            double_quote_escape_seq = constants.DOUBLE_QUOTE_ESCAPE_SEQ
             num_tracks = full_data["num_tracks"]
             num_artists = full_data["num_artists"]
             num_albums = full_data["num_albums"]

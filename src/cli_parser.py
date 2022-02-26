@@ -2,10 +2,12 @@
 import argparse
 import os
 
+#------------------------------Project Imports-----------------------------#
+import constants
 
 class CLIParser():
     def __init__(self):
-        self.parser = argparse.ArgumentParser(description="Spotify API Scraper Parser")
+        self.parser = argparse.ArgumentParser(description=constants.PROJECT_NAME)
         self.create_expected_params()
 
         self.args = vars(self.parser.parse_args())
