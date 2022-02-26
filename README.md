@@ -97,13 +97,3 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
          1. ![Windows Warning](docs/images/install/windows_warning.jpg)
    2. **Ubuntu/Debian/Windows Git-Bash:** [install/install.sh](install/install.sh)
    3. Allow the install script to finish
-
-## TODO
-
-* try merging last 2 routes into 1 render template for pie chart
-* get % genre in playlist
-* implement state check during auth
-  * better secure against XSS
-* Add the image of each playlist to the playlist table
-* have clicking on pie chart link to the artist/album itself
-* make end url's not show the long params
