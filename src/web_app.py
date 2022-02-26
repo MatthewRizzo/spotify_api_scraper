@@ -308,6 +308,10 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                     print("album {} has {} tracks in this playlist".format(
                         album, chart_data_album[album]))
 
+            # need to redirect because templates cannot be rendered within a post request
+            # Trust me, I know this isn't ideal (especially the escaping),
+            #   but things render ugly if done in response to a POST
+            # See: https://stackoverflow.com/questions/70977131/flask-render-template-after-client-post-request/70983151
             return redirect(url_for("show_playlist_by_artist_analysis",
                                     artist_data=chart_data_artist,
                                     album_data=chart_data_album,
