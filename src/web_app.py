@@ -121,7 +121,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         @login_required
         def logout():
             # remove the refresh token from the user info
-            self._data_manager.remove_users_refresh_token(current_user.get_id())
+            # self._data_manager.remove_users_refresh_token(current_user.get_id())
+            self._data_manager.remove_user_login_info(current_user.get_id())
 
             logout_user()
             return redirect(url_for("index", title=self._title))

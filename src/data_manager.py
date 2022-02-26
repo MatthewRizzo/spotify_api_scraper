@@ -114,6 +114,24 @@ class DataManager():
             data = dict(json.load(user_file))
         return user_id in data
 
+    def remove_user_login_info(self, user_id) -> None:
+        """Call when a user logs out to remove all of their auth info
+        \n`:precondition` The user exists
+        \n`:postcondition` All information relating to the user is deleted"""
+        # Read in the current json
+        data_json = {}
+        with open(pathlib.Path(self.expected_user_data_path), 'r') as user_file:
+            data_json = json.load(user_file)
+
+        if user_id in data_json:
+            del data_json[user_id]
+
+        # replace the data
+        with open(pathlib.Path(self.expected_user_data_path), 'w') as user_file:
+            json.dump(data_json, user_file, indent=2)
+
+        return True
+
     def _check_if_auth_file_exists(self) -> bool:
         """Ensures the non-default auth file was created properly.
         :return True if it exists"""
