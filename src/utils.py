@@ -42,8 +42,8 @@ class Utils():
         return cls.templates_dir_path
 
     @classmethod
-    def get_base_spotify_accounts_uri(cls) -> pathlib.Path:
-        return constants.BASE_SPOTIFY_ACCOUNTS_URI
+    def get_spotify_accounts_base_uri(cls) -> pathlib.Path:
+        return constants.SPOTIFY_ACCOUNTS_BASE_URI
 
     @classmethod
     def escape_html_special_char(cls, str_to_escape: str) -> str:

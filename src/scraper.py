@@ -8,6 +8,7 @@ import random
 
 #------------------------------Project Imports-----------------------------#
 from utils import Utils
+import constants
 
 class Scraper():
     def __init__(self, is_verbose: bool) -> None:
@@ -20,7 +21,7 @@ class Scraper():
         \n:return The url WITHOUT the actual return url. must add that manually"""
         self._auth_state_input = random.random()
 
-        spotify_auth_base_url = "https://accounts.spotify.com/authorize?"
+        spotify_auth_base_url = constants.SPOTIFY_AUTH_BASE_URL
         client_id_param_str = "client_id=" +  client_id
         redirect_uri_param_str = "redirect_uri=" + redirect_uri
         response_type_param_str = "response_type=code"
@@ -52,13 +53,15 @@ class Scraper():
         encoded_auth_str = encoded_auth_bytes.decode()
 
         header_auth_str = 'Basic ' + encoded_auth_str
-        headers = {'Authorization': header_auth_str,
-                   "Content-Type": "application/x-www-form-urlencoded"}
-        get_access_token_uri = Utils.get_base_spotify_accounts_uri() + "/api/token"
+
+        header = constants.SPOTIFY_GET_AUTH_HEADER_FORMAT
+        header["Authorization"] = header_auth_str
+
+        get_access_token_uri = constants.SPOTIFY_TOKEN_URI
 
         # Send the request and get a response
         req = requests.post(get_access_token_uri,
-                            params=params, headers=headers)
+                            params=params, headers=header)
         access_token_res_dict = req.json()
 
         # Make sure the request is successful
@@ -78,7 +81,7 @@ class Scraper():
         """:return Tuple(new_access_token, new_valid_for_sec). values are Null on failure
         :docs https://developer.spotify.com/documentation/general/guides/authorization/code-flow/
             see Request a refreshed Access Token for the format"""
-        refresh_uri = Utils.get_base_spotify_accounts_uri() + "/api/token"
+        refresh_uri = constants.SPOTIFY_TOKEN_URI
         params = {"grant_type": "refresh_token",
                   "refresh_token": refresh_token,
                     }
@@ -89,11 +92,11 @@ class Scraper():
         encoded_auth_str = encoded_auth_bytes.decode()
 
         header_auth_str = 'Basic ' + encoded_auth_str
-        headers = {'Authorization': header_auth_str,
-                   "Content-Type": "application/x-www-form-urlencoded"}
+        header = constants.SPOTIFY_GET_AUTH_HEADER_FORMAT
+        header["Authorization"] = header_auth_str
 
         req = requests.post(refresh_uri,
-                            params=params, headers=headers)
+                            params=params, headers=header)
         refresh_access_token_res = req.json()
 
         # Make sure the request is successful
@@ -109,10 +112,9 @@ class Scraper():
     def get_user_id(self, access_token) -> str:
         """Given an access token, get the user's id
         \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-current-users-profile """
-        user_profile_url = "https://api.spotify.com/v1/me"
-        header = {"Authorization": "Bearer " + access_token,
-                  "Content-Type": "application/json"}
-        get_req = requests.get(user_profile_url, headers=header)
+        header = constants.SPOTIFY_AUTHORIZED_HEADER_FORMAT
+        header["Authorization"] = "Bearer " + access_token
+        get_req = requests.get(constants.SPOTIFY_USER_PROFILE_URI, headers=header)
         raw_res = get_req.json()
         return str(raw_res['id'])
 
@@ -120,7 +122,6 @@ class Scraper():
     def get_users_playlists(self, access_token) -> List:
         """Given the current authenticated user, get their playlists"""
         # https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-list-of-current-users-playlists
-        req_url = "https://api.spotify.com/v1/me/playlists"
 
         # represents everything after 'items':
         playlists = {}
@@ -131,12 +132,13 @@ class Scraper():
 
         params = {'limit': max_num_playlists,
                   'offset': 0}
-        header = {'Authorization': "Bearer " + access_token,
-                  "Content-Type": "application/json"}
-        # Get the id's of the playlists owned by the user
-        get_playlist_ids_res = requests.get(req_url, params=params, headers=header).json()
+        header = constants.SPOTIFY_AUTHORIZED_HEADER_FORMAT
+        header["Authorization"] = "Bearer " + access_token
 
-        keep_going = True
+        # Get the id's of the playlists owned by the user
+        get_playlist_ids_res = requests.get(constants.SPOTIFY_GET_USER_PLAYLISTS_URI,
+                                            params=params,
+                                            headers=header).json()
 
         # Keep requesting the max number of playlists until all have been found. keep adding to dict
         while total_num_received < get_playlist_ids_res['total']:
@@ -150,7 +152,9 @@ class Scraper():
             params['offset'] = total_num_received
 
             get_playlist_ids_res = requests.get(
-                req_url, params=params, headers=header).json()
+                constants.SPOTIFY_GET_USER_PLAYLISTS_URI,
+                params=params,
+                headers=header).json()
         return playlists
 
     def get_songs_from_playlist(self, playlist_id: str, access_token : str
@@ -164,9 +168,11 @@ class Scraper():
         tracks_in_playlist = []
         playlist_name = None
 
-        next_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/"
-        header = {'Authorization': "Bearer " + access_token,
-                  "Content-Type": "application/json"}
+        base_playlist_url = constants.SPOTIFY_GET_PLAYLIST_URI
+
+        next_url = f"{base_playlist_url}/{playlist_id}/"
+        header = constants.SPOTIFY_AUTHORIZED_HEADER_FORMAT
+        header["Authorization"] = "Bearer " + access_token
 
         # Keep grabbing tracks from the playlist until return says there are no more
         while next_url is not None:
