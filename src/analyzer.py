@@ -83,8 +83,11 @@ class Analyzer():
 
         # only care about the primary artist of the song for purpose of id tracking / genre
         lead_artist_dict = raw_track["artists"][0]
+        lead_artist_name = lead_artist_dict["name"]
 
-        did_add = self._update_artist_url_map(artist_url_map, lead_artist_dict)
+        # Only try to find the genres of this artist if it is not already known
+        if lead_artist_name not in existing_artist_genre_mapping.keys():
+            did_add = self._update_artist_url_map(artist_url_map, lead_artist_dict)
 
         return res_dict
 
@@ -138,6 +141,9 @@ class Analyzer():
         \n:param `access_token` The token recieved on authentication from spotify
         \n:return None
         """
+        # Used to update the local file oncne all new mappings have been discovered
+        new_artist_genre_mappings = {}
+
         # For each artist, grab their genres from spotify and use that in metric calculations
         for artist in analyzed_artist_dict.keys():
             if artist not in artist_to_url_map.keys():
@@ -151,10 +157,14 @@ class Analyzer():
             artist_track_count = analyzed_artist_dict[artist]
             self._update_genre_count(artist_genres, genre_info, artist_track_count)
 
-                # Count the genre for the number of times this artist is in the playlist
-                cur_genre_count_in_playlist += analyzed_artist_dict[artist]
-                genre_info[cur_genre] = cur_genre_count_in_playlist
+            new_artist_genre_mappings.update({artist: artist_genres})
 
+        # Update the count using artists whose info is already saved locally
+        for artist, artist_genres in existing_artist_genre_mapping.items():
+            artist_track_count = analyzed_artist_dict[artist]
+            self._update_genre_count(artist_genres, genre_info, artist_track_count)
+
+        self._data_manager.update_artist_genre_mappings(new_artist_genre_mappings)
 
     def _prep_keys_for_json(self, analyzed_data : dict) -> None:
         """Given a dictionary of the analyzed_data (from its respective processing function),
