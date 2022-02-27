@@ -31,7 +31,7 @@ class Analyzer():
         artist_to_url_map = {}
 
         for raw_track in raw_track_list:
-            processed_track = self.parse_raw_track(raw_track, artist_to_url_map)
+            processed_track = self.parse_raw_track(raw_track, artist_to_url_map, existing_artist_genre_mapping)
 
             cur_track = processed_track["track_name"]
 
@@ -47,6 +47,7 @@ class Analyzer():
         self._analyze_playlist_for_genre(analyzed_chart_data_artist,
                                          analyzed_chart_data_genre,
                                          artist_to_url_map,
+                                         existing_artist_genre_mapping,
                                          access_token)
 
         # Make sure all of the genres are put in a valid form for json keys
@@ -58,10 +59,12 @@ class Analyzer():
 
         return (analyzed_chart_data_artist, analyzed_chart_data_album, analyzed_chart_data_genre)
 
-    def parse_raw_track(self, raw_track, artist_url_map: dict) -> dict:
+    def parse_raw_track(self, raw_track, artist_url_map: dict, existing_artist_genre_mapping : dict) -> dict:
         """Given a raw track from the get-track API, returns just the information we care about
         \n:param raw_track - the rest from the get-track API call
         \n:param artist_url_map - Maps each artist's name to the url to query them. Modifies this `in place`
+        \n:param existing_artist_genre_mapping - Existing map of artist_name -> genre.
+            Dont add to `artist_url_map` if the genre is already known
         \n:return Dict that maps track_name to other info:
             keys: {track_id: { track_name, album, artist(s) } }.
             Note: artists will be lists, but will mostly be of length 1
@@ -124,12 +127,14 @@ class Analyzer():
                                 analyzed_artist_dict: Dict,
                                 genre_info: Dict,
                                 artist_to_url_map : dict,
+                                existing_artist_genre_mapping : dict,
                                 access_token : str) -> None:
         """:brief Given a track to analyze and the current analysis dict,\
             updates `cur_genre_info` after analyzing the current track `IN PLACE`.
         \n:param `analyzed_artist_dict` a dict representing the final analysis of artists
         \n:param `genre_info` The genre metrics. `Generated in this function`
         \n:param `artist_to_url_map` Maps a artist's name to their spotify API URI
+        \n:param existing_artist_genre_mapping - Existing map of artist_name -> genre.
         \n:param `access_token` The token recieved on authentication from spotify
         \n:return None
         """
