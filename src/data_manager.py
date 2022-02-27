@@ -135,7 +135,7 @@ class DataManager():
         return True
 
     def get_artist_genre_mappings(self) -> Dict:
-        """:return the map of artist_name -> List[genres]"""
+        """:return The Existing map of artist_name -> List[genres] saved locally"""
         mapping_dict = {}
         with open(pathlib.Path(self.expected_artist_genre_path), 'r') as artist_to_genre_map_file:
             mapping_dict = json.load(artist_to_genre_map_file)
