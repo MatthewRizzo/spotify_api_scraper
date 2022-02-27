@@ -57,6 +57,30 @@
         };
     </script>
 
+    <!-- Make a pie chart for genres in playlist -->
+    <script type="text/javascript">
+        google.charts.load("current", { packages: ["corechart"] });
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                {% for key, value in genre_data.items() %}
+                    {% if value is string %}
+                    ["{{ key | safe }}", '{{ value | safe }}'],
+                        {% else %}
+                    ["{{ key | safe }}", {{ value }}],
+                        {% endif %}
+                    {% endfor %}
+            ]);
+
+        var options = {
+            title: 'Playlist Breakdown By Album',
+            is3D: false,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('playlist_by_genre_piechart'));
+        chart.draw(data, options);
+            };
+    </script>
 </head>
 
 <body>
@@ -72,6 +96,13 @@
         <h4>Number of Albums: {{ num_albums }} </h4>
 
         <div id="playlist_by_album_piechart" style="width: 99%; height: 500px;"></div>
+    </div>
+
+    <div style="margin: 10px 0 0 10px;width: 1000px">
+        <h3><b>Result of Breaking Down Playlist {{ playlist }} by Genre:</b></h3>
+        <h4>Number of Genres: {{ num_genres }} </h4>
+
+        <div id="playlist_by_genre_piechart" style="width: 99%; height: 500px;"></div>
     </div>
 </body>
 

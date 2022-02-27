@@ -199,6 +199,20 @@ class Scraper():
 
         return (tracks_in_playlist, playlist_name, total_num_tracks)
 
+    @classmethod
+    def get_artist_info(cls, artist_url : str, access_token : str) -> Optional[List[str]]:
+        """Given the spotify url to request, returns info about the artist
+        \n: return List of genres
+        \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artist """
+        header = constants.SPOTIFY_AUTHORIZED_HEADER_FORMAT
+        header["Authorization"] = "Bearer " + access_token
+        raw_artist_res = requests.get(artist_url, headers=header)
 
-
-
+        if (
+            raw_artist_res.status_code != 204 and
+            raw_artist_res.headers["content-type"].strip().startswith("application/json")
+        ):
+            artist_req = raw_artist_res.json()
+            return artist_req["genres"]
+        else:
+            return None

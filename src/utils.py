@@ -106,10 +106,15 @@ class Utils():
         """Given a json in str format from a request.args.to_dict() that WAS a json, \
             ensure it is in a valid dictionary/HTML format for the charts.
         :return The properly formatted dict"""
+        converted_dict = {}
         raw_json_str = str(raw_json_str).replace("\'", "\"").replace("\n", " ")
         raw_json_dict = {} if raw_json_str is None else raw_json_str
 
-        converted_dict = json.loads(raw_json_dict)
+        try:
+            converted_dict = json.loads(raw_json_dict)
+        except:
+            print("ERROR: failed to convert the dict. raw_dict = ")
+            print(f"{raw_json_dict}")
 
         final_converted_dict = Utils.prep_keys_for_html(converted_dict)
 
@@ -149,7 +154,8 @@ class Utils():
                     # account for what the key will look like AFTER it has single quote replaced
                     old_key = keys_to_change_single[-1][1]
 
-                new_key = str(old_key).replace(double_quote_escape_seq, '"')
+                # Double quote's don't work for HTML, just keep it as '
+                new_key = str(old_key).replace(double_quote_escape_seq, "'")
                 keys_to_change_double.append((old_key, new_key))
         return (keys_to_change_single, keys_to_change_double)
 

@@ -14,7 +14,8 @@ TEMPLATE_DIR_NAME =             "templates"
 
 # Web Page / Display Constants
 PLAYLIST_TABLE_ARTIST_COLUMN =  "Analyze Playlist"
-DEFAULT_NO_ALBUM_NAME_MSG =     "Album Unknown"
+DEFAULT_NO_ALBUM_NAME =     "Album Unknown"
+DEFAULT_NO_GENRE_NAME =     "Other Genre"
 
 # URL/URI Related constants
 SPOTIFY_API_BASE_URI =          "https://api.spotify.com"
@@ -24,7 +25,7 @@ SPOTIFY_TOKEN_URI =             "https://accounts.spotify.com/api/token"
 SPOTIFY_GET_PLAYLIST_URI =      "https://api.spotify.com/v1/playlists" # Can get ANY Playlist
 SPOTIFY_GET_USER_PLAYLISTS_URI= "https://api.spotify.com/v1/me/playlists" # Gets ALL playlists of current user
 SPOTIFY_USER_PROFILE_URI =      "https://api.spotify.com/v1/me"
-
+SPOTIFY_ARTIST_BASE_URI =       "https://api.spotify.com/v1/artists/" # ends with their id
 
 # API Header formats. NOTE: FILL IN "Authorization" before using them
 # Used to obtain/refresh authorizationn

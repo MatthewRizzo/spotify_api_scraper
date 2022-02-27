@@ -4,14 +4,16 @@ from typing import List, Dict, Optional, Tuple
 #------------------------------Project Imports-----------------------------#
 import constants
 from utils import Utils
+from scraper import Scraper
 
 class Analyzer():
     def __init__(self, is_verbose) -> None:
         """Class Used to analyze the data coming out of scraper in a form usable by WebApp"""
         self._is_verbose = is_verbose
 
-    def analyze_raw_track_list(self, raw_track_list: List[Dict]) -> Tuple[Dict, Dict, Dict]:
+    def analyze_raw_track_list(self, raw_track_list: List[Dict], access_token : str) -> Tuple[Dict, Dict, Dict]:
         """Given a list of raw track dicts from the API call itself, grabs all relevant info and does some analytics.
+        \n:param access_token the access token received after authentication
         \n:return a Tuple of (chart_data_artist, chart_data_album, chart_data_genre).
         Each entry of the tuple is a Dict (with html/json safe keys).
         Each dict is readily usable for the rendering of the pie-charts.
@@ -22,10 +24,10 @@ class Analyzer():
         analyzed_chart_data_album = {}
         analyzed_chart_data_genre = {}
 
-        artist_to_url = {}
+        artist_to_url_map = {}
 
         for raw_track in raw_track_list:
-            processed_track = self.parse_raw_track(raw_track, artist_to_url)
+            processed_track = self.parse_raw_track(raw_track, artist_to_url_map)
 
             cur_track = processed_track["track_name"]
 
@@ -33,52 +35,49 @@ class Analyzer():
             cur_artist = self._analyze_raw_track_artists(processed_track, analyzed_chart_data_artist)
             cur_album = self._analyze_raw_track_album(processed_track, analyzed_chart_data_album)
 
-
-            if cur_album == " " or cur_album == '':
-                cur_album = constants.DEFAULT_NO_ALBUM_NAME_MSG
-
             if self._is_verbose:
                 print("Track {} by {} from their {} album".format(
                     cur_track, cur_artist, cur_album
                 ))
 
-        # self._analyze_playlist_for_genre(analyzed_chart_data_artist, analyzed_chart_data_genre)
-
+        self._analyze_playlist_for_genre(analyzed_chart_data_artist,
+                                         analyzed_chart_data_genre,
+                                         artist_to_url_map,
+                                         access_token)
 
         # Make sure all of the genres are put in a valid form for json keys
         # replace all keys with ' or " in them with escape sequences
         # Will get converted back later
         self._prep_keys_for_json(analyzed_chart_data_artist)
         self._prep_keys_for_json(analyzed_chart_data_album)
-        # self._prep_keys_for_json(analyzed_chart_data_genre)
+        self._prep_keys_for_json(analyzed_chart_data_genre)
 
         return (analyzed_chart_data_artist, analyzed_chart_data_album, analyzed_chart_data_genre)
 
     def parse_raw_track(self, raw_track, artist_url_map: dict) -> dict:
         """Given a raw track from the get-track API, returns just the information we care about
         \n:param raw_track - the rest from the get-track API call
-        \n:param artist_url_map - Maps each artist's name to the url to query them
+        \n:param artist_url_map - Maps each artist's name to the url to query them. Modifies this `in place`
         \n:return Dict that maps track_name to other info:
-            keys: {track_id: { track_name, album, artist(s), genre(s) } }.
-            Note: artists and genres will be lists, but will mostly be of length 1
-        \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track"""
+            keys: {track_id: { track_name, album, artist(s) } }.
+            Note: artists will be lists, but will mostly be of length 1
+        \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track
+        \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artist"""
         res_dict = {}
         res_dict["track_id"] = raw_track["id"]
         res_dict["track_name"] = raw_track["name"]
         res_dict["album"] = raw_track["album"]["name"]
         res_dict["artists"] = []
 
-        print("artists = {}".format(raw_track["artists"]))
-
         # contains info about the artist of this track
         for artist_dict in raw_track["artists"]:
             artist_name = artist_dict["name"]
-            res_dict["artists"].append()
+            res_dict["artists"].append(artist_name)
 
-            if artist_name not in artist_url_map.keys():
-                artist_url = raw_track["artists"]["external_urls"]["spotify"]
-                artist_url_map[artist_name] = artist_url
-                print(f"artist_url = {artist_url}")
+        # only care about the primary artist of the song for purpose of id tracking / genre
+        lead_artist_dict = raw_track["artists"][0]
+
+        did_add = self._update_artist_url_map(artist_url_map, lead_artist_dict)
 
         return res_dict
 
@@ -117,19 +116,36 @@ class Analyzer():
 
         return cur_album
 
-    def _analyze_playlist_for_genre(self, analyzed_artist_dict: Dict, genre_info: Dict) -> None:
+    def _analyze_playlist_for_genre(self,
+                                analyzed_artist_dict: Dict,
+                                genre_info: Dict,
+                                artist_to_url_map : dict,
+                                access_token : str) -> None:
         """:brief Given a track to analyze and the current analysis dict,\
             updates `cur_genre_info` after analyzing the current track `IN PLACE`.
         \n:param `analyzed_artist_dict` a dict representing the final analysis of artists
-        \n:param `genre_info` The genre metrics.
+        \n:param `genre_info` The genre metrics. `Generated in this function`
+        \n:param `artist_to_url_map` Maps a artist's name to their spotify API URI
+        \n:param `access_token` The token recieved on authentication from spotify
         \n:return None
         """
-        # for each artist in analyzed_artist_dict query for their genre(s)
-        # Hvae to get the artist id's
-        # sum all the times a genre appears (mult by number of songs by that artist)
+        # For each artist, grab their genres from spotify and use that in metric calculations
+        for artist in analyzed_artist_dict.keys():
+            if artist not in artist_to_url_map.keys():
+                print(f"ERROR: artist {artist} does not have a spotify url to query")
+                continue
+            artist_url = artist_to_url_map[artist]
+            artist_genres = Scraper.get_artist_info(artist_url, access_token)
 
-        # NOTE: artists will be in the preformatted form for json, have to temporarily convert them back
-        pass
+            # Update the count of a given genre in the playlist
+            for cur_genre in artist_genres:
+                if cur_genre == "" or cur_genre == " ":
+                    cur_genre = constants.DEFAULT_NO_GENRE_NAME
+                cur_genre_count_in_playlist = genre_info.get(cur_genre, 0)
+
+                # Count the genre for the number of times this artist is in the playlist
+                cur_genre_count_in_playlist += analyzed_artist_dict[artist]
+                genre_info[cur_genre] = cur_genre_count_in_playlist
 
 
     def _prep_keys_for_json(self, analyzed_data : dict) -> None:
@@ -145,3 +161,27 @@ class Analyzer():
         # change the ' to know what they are later
         Utils.swap_dict_keys(analyzed_data, keys_to_escape_single)
         Utils.swap_dict_keys(analyzed_data, keys_to_escape_double)
+
+    def _update_artist_url_map(self, artist_url_map: dict, lead_artist_dict : dict) -> bool:
+        """Checks if the artist is in the artist->api url map. Adds it if it is not.
+        \n:return True on artist url added, False if not added"""
+        lead_artist_name = lead_artist_dict["name"]
+        did_add = False
+
+        if lead_artist_name not in artist_url_map.keys():
+
+            # Can't trust the given external url for then querying info about the artist
+            # Build it from base url + getting their id
+            artist_id = lead_artist_dict["id"]
+
+            # Local files aren't actual artists and so they might not have id's, skip them
+            if artist_id is None:
+                if self._is_verbose:
+                    print(
+                        f"Skipping genre collection for Local File with artist {lead_artist_name}")
+            else:
+                artist_url = constants.SPOTIFY_ARTIST_BASE_URI + artist_id
+                artist_url_map[lead_artist_name] = artist_url
+                did_add = True
+
+        return did_add

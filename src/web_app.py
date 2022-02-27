@@ -257,10 +257,12 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             if self._is_verbose:
                 print(f"playlist name = {playlist_name}")
 
-            chart_data_artist, chart_data_album, chart_data_genre = self.analyzer.analyze_raw_track_list(raw_track_list)
+            analyzed_data_tuple = self.analyzer.analyze_raw_track_list(raw_track_list, current_user.get_access_token())
+            chart_data_artist, chart_data_album, chart_data_genre = analyzed_data_tuple
 
             num_artists = len(list(chart_data_artist.keys()))
             num_albums = len(list(chart_data_album.keys()))
+            num_genres = len(list(chart_data_genre.keys()))
 
             if self._is_verbose:
                 print("\n\nDone processing Playlist:")
@@ -270,6 +272,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 for album in chart_data_album.keys():
                     print("album {} has {} tracks in this playlist".format(
                         album, chart_data_album[album]))
+                print(f"\nThere are {num_genres} genres in this playlist:")
+                print("\t{}".format(" ".join(chart_data_genre.keys())))
 
             # need to redirect because templates cannot be rendered within a post request
             # Trust me, I know this isn't ideal (especially the escaping),
@@ -278,11 +282,12 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             return redirect(url_for("show_playlist_analysis",
                                     artist_data=chart_data_artist,
                                     album_data=chart_data_album,
-                                    # genre_data=chart_data_genre,
+                                    genre_data=chart_data_genre,
                                     playlist=playlist_name,
                                     num_tracks=total_num_tracks,
                                     num_artists=num_artists,
-                                    num_albums=num_albums))
+                                    num_albums=num_albums,
+                                    num_genres=num_genres))
 
     def create_processed_data_pages(self):
         @self._app.route("/charts/playlist_analysis", methods=["GET"])
@@ -296,17 +301,16 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             num_tracks = full_data["num_tracks"]
             num_artists = full_data["num_artists"]
             num_albums = full_data["num_albums"]
+            num_genres = full_data["num_genres"]
 
             input_data_artist = Utils.prep_dict_for_html(full_data["artist_data"])
-
             input_data_album = Utils.prep_dict_for_html(full_data["album_data"])
-
-            # input_data_genre = Utils.prep_dict_for_html(full_data["genre_data"])
+            input_data_genre = Utils.prep_dict_for_html(full_data["genre_data"])
 
             # Sort by value - have the top values in legend by largest %
             input_data_artist = {k: v for k, v in sorted(input_data_artist.items(), key=lambda item: item[1], reverse=True)}
             input_data_album = {k: v for k, v in sorted(input_data_album.items(), key=lambda item: item[1], reverse=True)}
-            # input_data_genre = {k: v for k, v in sorted(input_data_genre.items(), key=lambda item: item[1], reverse=True)}
+            input_data_genre = {k: v for k, v in sorted(input_data_genre.items(), key=lambda item: item[1], reverse=True)}
 
             # First entry in dictionary MUST be the column names
             artist_data = {'Artist': 'Percentage of Playlist'}
@@ -315,8 +319,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             album_data = {'Album': 'Percentage of Playlist'}
             album_data.update(input_data_album)
 
-            # genre_data = {'Genre': 'Percentage of Playlist'}
-            # album_data.update(input_data_genre)
+            genre_data = {'Genre': 'Percentage of Playlist'}
+            genre_data.update(input_data_genre)
 
             # TODO: add links to the pie chart
             # https: // stackoverflow.com/questions/6205621/how-to-add-links-in-google-chart-api
@@ -324,9 +328,10 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                    title=self._title,
                                    artist_data=artist_data,
                                    album_data=album_data,
-                                #    genre_data=genre_data,
+                                   genre_data=genre_data,
                                    playlist=playlist,
                                    num_tracks=num_tracks,
                                    num_artists=num_artists,
-                                   num_albums=num_albums)
+                                   num_albums=num_albums,
+                                   num_genres=num_genres)
 
