@@ -3,19 +3,20 @@
 PROJECT_NAME = "Spotify API Scraper Parser"
 
 # File / path constants
-DEFAULT_AUTH_FILENAME =         "default_app_auth.json"
-EXPECTED_AUTH_FILENAME =        "app_auth.json"
-EXPECTED_USER_DATA_FILENAME =   "user_info.json"
-DATA_DIR_NAME =                 "data"
-FRONTEND_DIR_NAME =             "frontend"
-STATIC_DIR_NAME =               "static"
-TEMPLATE_DIR_NAME =             "templates"
+DEFAULT_AUTH_FILENAME =                 "default_app_auth.json"
+EXPECTED_AUTH_FILENAME =                "app_auth.json"
+EXPECTED_USER_DATA_FILENAME =           "user_info.json"
+EXPECTED_ARTIST_TO_GENRE_MAP_FILENAME = "artist_genre_map.json"
+DATA_DIR_NAME =                         "data"
+FRONTEND_DIR_NAME =                     "frontend"
+STATIC_DIR_NAME =                       "static"
+TEMPLATE_DIR_NAME =                     "templates"
 
 
 # Web Page / Display Constants
 PLAYLIST_TABLE_ARTIST_COLUMN =  "Analyze Playlist"
-DEFAULT_NO_ALBUM_NAME =     "Album Unknown"
-DEFAULT_NO_GENRE_NAME =     "Other Genre"
+DEFAULT_NO_ALBUM_NAME =         "Album Unknown"
+DEFAULT_NO_GENRE_NAME =         "Other Genre"
 
 # URL/URI Related constants
 SPOTIFY_API_BASE_URI =          "https://api.spotify.com"
