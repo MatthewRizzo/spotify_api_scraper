@@ -254,17 +254,10 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             chart_data_album = {}
             raw_track_list, playlist_name, total_num_tracks = self.get_songs_from_playlist(playlist_id, token)
 
-            # Used to remove ' from key names until it is safe to put them back in
-            # eventually the ' wrapped around key's are ALL changed to ",
-            # but that will also change ' in the keys to " which is BAD for parsing.
-            # change the ' to know what they are later
-            single_quote_escape_seq = constants.SINGLE_QUOTE_ESCAPE_SEQ
-            double_quote_escape_seq = constants.DOUBLE_QUOTE_ESCAPE_SEQ
-
             if self._is_verbose:
                 print(f"playlist name = {playlist_name}")
 
-            chart_data_artist, chart_data_album = self.analyzer.analyze_raw_track_list(raw_track_list)
+            chart_data_artist, chart_data_album, chart_data_genre = self.analyzer.analyze_raw_track_list(raw_track_list)
 
             num_artists = len(list(chart_data_artist.keys()))
             num_albums = len(list(chart_data_album.keys()))
@@ -285,6 +278,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             return redirect(url_for("show_playlist_analysis",
                                     artist_data=chart_data_artist,
                                     album_data=chart_data_album,
+                                    # genre_data=chart_data_genre,
                                     playlist=playlist_name,
                                     num_tracks=total_num_tracks,
                                     num_artists=num_artists,
@@ -299,34 +293,30 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
             full_data = request.args.to_dict()
             playlist = full_data["playlist"]
-            single_quote_escape_seq = constants.SINGLE_QUOTE_ESCAPE_SEQ
-            double_quote_escape_seq = constants.DOUBLE_QUOTE_ESCAPE_SEQ
             num_tracks = full_data["num_tracks"]
             num_artists = full_data["num_artists"]
             num_albums = full_data["num_albums"]
 
-            input_data_artist = str(full_data["artist_data"]).replace("\'", "\"").replace("\n", " ")
-            input_data_artist = {} if input_data_artist is None else input_data_artist
-            input_data_artist = json.loads(input_data_artist)
-            input_data_artist = Utils.validate_key_format(
-                input_data_artist, single_quote_escape_seq, double_quote_escape_seq)
+            input_data_artist = Utils.prep_dict_for_html(full_data["artist_data"])
+
+            input_data_album = Utils.prep_dict_for_html(full_data["album_data"])
+
+            # input_data_genre = Utils.prep_dict_for_html(full_data["genre_data"])
+
             # Sort by value - have the top values in legend by largest %
             input_data_artist = {k: v for k, v in sorted(input_data_artist.items(), key=lambda item: item[1], reverse=True)}
+            input_data_album = {k: v for k, v in sorted(input_data_album.items(), key=lambda item: item[1], reverse=True)}
+            # input_data_genre = {k: v for k, v in sorted(input_data_genre.items(), key=lambda item: item[1], reverse=True)}
 
             # First entry in dictionary MUST be the column names
             artist_data = {'Artist': 'Percentage of Playlist'}
             artist_data.update(input_data_artist)
 
-            input_data_album = str(full_data["album_data"]).replace("\'", "\"").replace("\n", " ")
-            input_data_album = {} if input_data_album is None else input_data_album
-            input_data_album = json.loads(input_data_album)
-            input_data_album = Utils.validate_key_format(
-                input_data_album, single_quote_escape_seq, double_quote_escape_seq)
-            # Sort by value - have the top values in legend by largest %
-            input_data_album = {k: v for k, v in sorted(input_data_album.items(), key=lambda item: item[1], reverse=True)}
-
             album_data = {'Album': 'Percentage of Playlist'}
             album_data.update(input_data_album)
+
+            # genre_data = {'Genre': 'Percentage of Playlist'}
+            # album_data.update(input_data_genre)
 
             # TODO: add links to the pie chart
             # https: // stackoverflow.com/questions/6205621/how-to-add-links-in-google-chart-api
@@ -334,6 +324,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                    title=self._title,
                                    artist_data=artist_data,
                                    album_data=album_data,
+                                #    genre_data=genre_data,
                                    playlist=playlist,
                                    num_tracks=num_tracks,
                                    num_artists=num_artists,

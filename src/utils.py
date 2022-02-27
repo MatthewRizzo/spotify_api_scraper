@@ -60,11 +60,11 @@ class Utils():
 
 
     @classmethod
-    def prep_keys_for_html(cls, dict_to_check: dict, single_quote_escape_seq: str, double_quote_escape_seq: str) -> dict:
+    def prep_keys_for_html(cls, dict_to_check: dict) -> dict:
         """Given a dictionary, ensures all keys are formatted properly. i.e. that there are no " in the key name
         :param single_quote_escape_seq An escape sequence to denote this SHOULD be a single quote.
         \n:return the properly formatted dictionary and list of keys that were changed"""
-        change_lists = cls.get_keys_with_quotes(dict_to_check, single_quote_escape_seq, double_quote_escape_seq)
+        change_lists = cls.get_keys_with_escaped_quotes(dict_to_check)
         keys_to_change_single, keys_to_change_double = change_lists
 
         # list of tuples
@@ -102,9 +102,7 @@ class Utils():
         return dict_to_check
 
     @classmethod
-    def prep_dict_for_html(cls, raw_json_str : str,
-                           single_quote_escape_seq : str,
-                           double_quote_escape_seq : str) -> dict:
+    def prep_dict_for_html(cls, raw_json_str : str) -> dict:
         """Given a json in str format from a request.args.to_dict() that WAS a json, \
             ensure it is in a valid dictionary/HTML format for the charts.
         :return The properly formatted dict"""
@@ -113,8 +111,7 @@ class Utils():
 
         converted_dict = json.loads(raw_json_dict)
 
-        final_converted_dict = Utils.prep_keys_for_html(
-            converted_dict, single_quote_escape_seq, double_quote_escape_seq)
+        final_converted_dict = Utils.prep_keys_for_html(converted_dict)
 
         return final_converted_dict
 
@@ -129,12 +126,15 @@ class Utils():
         return end_time
 
     @classmethod
-    def get_keys_with_quotes(cls, dict_to_check: dict,
-                             single_quote_escape_seq: str,
-                             double_quote_escape_seq: str
+    def get_keys_with_escaped_quotes(cls, dict_to_check: dict,
                              ) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
-        """:return (keys_with_single_quotes, keys_with_double_quotes)
+        """Given dictionaries where the keys are escaped versions of single and double quotes,
+        find all escaped keys and return them w/ their original versions
+        \n:return (keys_with_escaped_single_quotes, keys_with_escaped_double_quotes)
         where each of those is a LIST of Tuples -> (old_key, new_key)"""
+        single_quote_escape_seq = constants.SINGLE_QUOTE_ESCAPE_SEQ
+        double_quote_escape_seq = constants.DOUBLE_QUOTE_ESCAPE_SEQ
+
         # list of tuples
         keys_to_change_single = []
         keys_to_change_double = []
@@ -149,6 +149,34 @@ class Utils():
                     # account for what the key will look like AFTER it has single quote replaced
                     old_key = keys_to_change_single[-1][1]
 
-                new_key = str(old_key).replace(double_quote_escape_seq, "'")
+                new_key = str(old_key).replace(double_quote_escape_seq, '"')
+                keys_to_change_double.append((old_key, new_key))
+        return (keys_to_change_single, keys_to_change_double)
+
+    @classmethod
+    def get_keys_with_unescaped_quotes(cls, dict_to_check: dict,
+                                     ) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
+        """Given dictionaries where the keys can have ' and or " in them,
+        find all of those keys and return lists showing what their replaced versions are
+        \n:return (keys_with_escaped_single_quotes, keys_with_escaped_double_quotes)
+        where each of those is a LIST of Tuples -> (old_key, new_key)"""
+        single_quote_escape_seq = constants.SINGLE_QUOTE_ESCAPE_SEQ
+        double_quote_escape_seq = constants.DOUBLE_QUOTE_ESCAPE_SEQ
+
+        # list of tuples
+        keys_to_change_single = []
+        keys_to_change_double = []
+        for key in dict_to_check.keys():
+            has_single_quote = "'" in key
+            if has_single_quote:
+                new_key = str(key).replace("'", single_quote_escape_seq)
+                keys_to_change_single.append((key, new_key))
+            if '"' in key:
+                old_key = key
+                if has_single_quote:
+                    # account for what the key will look like AFTER it has single quote replaced
+                    old_key = keys_to_change_single[-1][1]
+
+                new_key = str(old_key).replace(double_quote_escape_seq, '"')
                 keys_to_change_double.append((old_key, new_key))
         return (keys_to_change_single, keys_to_change_double)
