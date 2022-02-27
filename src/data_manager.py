@@ -159,6 +159,11 @@ class DataManager():
                 res = dict(data_json[user_id])
         return res
 
+    def _write_to_json_file(self, path_to_json : str, dict_to_write : dict) -> None:
+        """Given a json file's path and the FULL data to overwrite it with, write it to the file"""
+        with open(pathlib.Path(path_to_json), 'w') as file:
+            json.dump(dict_to_write, file, indent=2)
+
 if __name__ == "__main__":
     data_parser = DataManager()
     print(data_parser.get_auth_info())
