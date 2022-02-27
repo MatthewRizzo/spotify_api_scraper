@@ -193,10 +193,8 @@ class Analyzer():
             artist_id = lead_artist_dict["id"]
 
             # Local files aren't actual artists and so they might not have id's, skip them
-            if artist_id is None:
-                if self._is_verbose:
-                    print(
-                        f"Skipping genre collection for Local File with artist {lead_artist_name}")
+            if artist_id is None and self._is_verbose:
+                print(f"Skipping genre collection for Local File with artist {lead_artist_name}")
             else:
                 artist_url = constants.SPOTIFY_ARTIST_BASE_URI + artist_id
                 artist_url_map[lead_artist_name] = artist_url
