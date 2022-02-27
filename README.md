@@ -10,9 +10,9 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
 
 1. Follow [Setup Guide](#setup-guide)
 2. Run start script based on Operating System
-   1. **Windows:** open a command prompt (windows button + 'cmd' + enter)
-      1. navigate to where you downloaded / extracted this code
-      2. [start.bat](start.bat)
+   1. **Windows:** Open File Explorer and navigate to where you downloaded / extracted this code
+      1. Dobule Click on the start batch file
+         1. ![example start](docs/images/run_start_gui.jpg)
       3. The first time the program is run, Windows Firewall might block the application.
       4. Please click "Allow Access". This issue should not happen again.
       5. When ending the program please do `Ctrl+C` then respond to `Terminate batch job (Y/N)?` with `y` and click enter.
@@ -39,7 +39,10 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
 
 1. (For Windows Only) Download [Python3.9](https://www.python.org/downloads/release/python-390/)
    1. **Note:** Using a different / earlier version of python will result in the code not working. Please be sure your version is python 3.9.
-   2. Click your windows key and type `cmd` to open a command prompt
+   2. ![Which to select](docs/images/install/install_python.jpg)
+   3. When the download finishes, run the executable by double clicking on it
+      1. Run through whatever instructions the installer gives you
+   4. Click your windows key and type `cmd` to open a command prompt
       1. Please run `py -0` to see a list of installed python versions.
       2. Please confirm that you see `"-3.9-64 *"` or `"-3.9-64 "`. If you do, installation was successful.
 
@@ -54,7 +57,7 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
       3. Click `Extract All`
       4. Select which folder to extract it to by clicking `Browse`
       5. Click the `Extract` Button on the widnow that pop'd up
-   3. Remember this directory!!
+   3. Remember this folder!!
 
 ### Step 3: Setup Spotify API
 
@@ -81,9 +84,18 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
 
 1. Go to the folder you extracted the zip file to [Download the Code for this Project](#step-2-download-code-for-this-project)
 2. Copy the template provided by [data/default_app_auth.json](data/default_app_auth.json) into `data/app_auth.json`
-   1. **THIS IS IMPORTANT**. The application will search for this file. If it does not exist, you will be prompted to create it.
-   2. Replace the default values with those associated with your Application
-      1. see: <https://developer.spotify.com/documentation/general/guides/authorization/code-flow/>
+   1. This can be done by:
+      1. Right clicking [data/default_app_auth.json](data/default_app_auth.json)
+      2. Selecting "copy"
+      3. Right clicking in `File Explorer`
+      4. Selecting Paste
+      5. Right clicking the file called `default_app_auth - Copy`
+      6. Selecting `Rename`
+      7. Clicking delete / backspace
+      8. Typing in `app_auth` and clicking the `Enter` key
+   2. **THIS IS IMPORTANT**. The application will search for this file. If it does not exist, you will be prompted to create it.
+   3. Replace the default values with those associated with your Application
+      1. See: <https://developer.spotify.com/documentation/general/guides/authorization/code-flow/>
       2. client_id = client id of your new registered application
       3. Client Secret - also comes from your application.
          1. **DO NOT SHARE THIS WITH OTHERS**
