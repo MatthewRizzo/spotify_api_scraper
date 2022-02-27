@@ -17,7 +17,7 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
       4. Please click "Allow Access". This issue should not happen again.
       5. When ending the program please do `Ctrl+C` then respond to `Terminate batch job (Y/N)?` with `y` and click enter.
    2. **Ubuntu/Debian/Windows Git-Bash:** [start script](start.sh)
-3. Go to [Homepage](<http://localhost:8080/>) - <http://localhost:8080/>
+3. Go to [Homepage](<http://localhost:9324/>) - <http://localhost:9324/>
 4. Follow authorization prompts - sign into spotify
   1. ![auth_example](docs/images/authorization.png)
   2. Click Agree
@@ -73,7 +73,7 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
       1. Click Edit Settings
          1. ![Edit Settings](docs/images/setup/edit_settings_button.jpg)
       2. Go to **Redirect URI's field**
-         1. Enter `http://localhost:8080/redirect_after_auth` (see below for example)
+         1. Enter `http://localhost:9324/redirect_after_auth` (see below for example)
          2. ![Redirect URI's field](docs/images/setup/add_uri_callback.jpg)
       3. Type in the url EXACTLY as shown in the image **(Step 1)**
       4. Click the add button whose position is marked in the image **(Step 2)**

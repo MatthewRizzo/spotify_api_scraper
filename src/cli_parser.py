@@ -20,7 +20,7 @@ class CLIParser():
             type=int,
             required=False,
             help="The port The Web App is run from",
-            default=env_port if env_port is not None else 8080,
+            default=env_port if env_port is not None else 9324,
             dest="port"
         )
 
