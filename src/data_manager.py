@@ -2,7 +2,7 @@
 import json
 import pathlib
 import io
-from typing import Optional
+from typing import Dict, Optional
 from datetime import datetime
 import os
 import sys
@@ -130,10 +130,20 @@ class DataManager():
             del data_json[user_id]
 
         # replace the data
-        with open(pathlib.Path(self.expected_user_data_path), 'w') as user_file:
-            json.dump(data_json, user_file, indent=2)
+        self._write_to_json_file(self.expected_user_data_path, data_json)
 
         return True
+
+    def get_artist_genre_mappings(self) -> Dict:
+        """:return the map of artist_name -> List[genres]"""
+        mapping_dict = {}
+        with open(pathlib.Path(self.expected_artist_genre_path), 'r') as artist_to_genre_map_file:
+            mapping_dict = json.load(artist_to_genre_map_file)
+        return mapping_dict
+
+    def update_artist_genre_mappings(self, new_mappings : dict) -> bool:
+        """Given a dictionary of artist_name -> List[genres], adds these new mapping to the map file"""
+        self._update_json_file(self.expected_artist_genre_path, new_mappings)
 
     def _check_if_auth_file_exists(self) -> bool:
         """Ensures the non-default auth file was created properly.
@@ -160,9 +170,24 @@ class DataManager():
         return res
 
     def _write_to_json_file(self, path_to_json : str, dict_to_write : dict) -> None:
-        """Given a json file's path and the FULL data to overwrite it with, write it to the file"""
+        """Given a json file's path and the FULL data to `overwrite` it with, write it to the file
+        \n:NOTE: THIS WILL OVERWRITE THE CURRENT FILE CONTENTS"""
         with open(pathlib.Path(path_to_json), 'w') as file:
             json.dump(dict_to_write, file, indent=2)
+
+    def _read_from_json_file(self, path_to_json : str) -> dict:
+        """:return the entire json file"""
+        data = {}
+        with open(pathlib.Path(path_to_json), 'r') as file:
+            data = dict(json.load(file))
+        return data
+
+    def _update_json_file(self, path_to_json: str, dict_to_update_with: dict) -> None:
+        """Given a json file's path, updates the file with the information given.
+        \n:NOTE: it WILL modify existing values if dict_to_update_with has a key that already exists in the file"""
+        json_data = self._read_from_json_file(path_to_json)
+        json_data.update(dict_to_update_with)
+        self._write_to_json_file(path_to_json, json_data)
 
 if __name__ == "__main__":
     data_parser = DataManager()
