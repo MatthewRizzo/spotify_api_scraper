@@ -177,6 +177,6 @@ class Utils():
                     # account for what the key will look like AFTER it has single quote replaced
                     old_key = keys_to_change_single[-1][1]
 
-                new_key = str(old_key).replace(double_quote_escape_seq, '"')
+                new_key = str(old_key).replace('"', double_quote_escape_seq)
                 keys_to_change_double.append((old_key, new_key))
         return (keys_to_change_single, keys_to_change_double)
