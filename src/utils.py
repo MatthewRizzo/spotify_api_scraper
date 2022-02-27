@@ -67,37 +67,9 @@ class Utils():
         change_lists = cls.get_keys_with_escaped_quotes(dict_to_check)
         keys_to_change_single, keys_to_change_double = change_lists
 
-        # list of tuples
-        # keys_to_change_single = []
-        # keys_to_change_double = []
-        # for key in dict_to_check.keys():
-        #     has_single_quote = single_quote_escape_seq in key
-        #     if has_single_quote:
-        #         new_key = str(key).replace(single_quote_escape_seq, "'")
-        #         keys_to_change_single.append((key, new_key))
-        #     if double_quote_escape_seq in key:
-        #         old_key = key
-        #         if has_single_quote:
-        #             # account for what the key will look like AFTER it has single quote replaced
-        #             old_key = keys_to_change_single[-1][1]
-
-        #         new_key = str(old_key).replace(double_quote_escape_seq, "'")
-        #         keys_to_change_double.append((old_key, new_key))
-
         # swap keys with single quote and THEN double quote
         cls.swap_dict_keys(dict_to_check, keys_to_change_single)
         cls.swap_dict_keys(dict_to_check, keys_to_change_double)
-
-        # for old_key in keys_to_change_single:
-        #     dict_to_check[new_key] = dict_to_check.pop(old_key)
-
-        #     # also update the key to get changed for double quotes (if it has both)
-        #     keys_to_change_double = list(map(lambda x: x.replace(old_key, new_key), keys_to_change_double))
-
-        # for old_key in keys_to_change_double:
-        #     # make sure to escape the " so the html doesnt think a value is ending
-        #     new_key = str(old_key).replace(double_quote_escape_seq, '\\"')
-        #     dict_to_check[new_key] = dict_to_check.pop(old_key)
 
         return dict_to_check
 
