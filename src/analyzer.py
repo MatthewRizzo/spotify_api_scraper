@@ -77,6 +77,7 @@ class Analyzer():
 
         # do the metric calculations and update the results
         # TODO: better handle features
+        # TODO - try an abstract this to a function - for the other analyze functions too
         cur_num_tracks_by_artist = cur_artist_info.get(cur_artist, 0)
         cur_num_tracks_by_artist += 1
         cur_artist_info[cur_artist] = cur_num_tracks_by_artist

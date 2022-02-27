@@ -197,7 +197,6 @@ class Scraper():
             for track in track_list:
                 tracks_in_playlist.append(track["track"])
 
-
         return (tracks_in_playlist, playlist_name, total_num_tracks)
 
 
