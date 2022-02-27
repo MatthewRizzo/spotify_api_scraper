@@ -26,12 +26,11 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
 6. See a list of all public Playlists
    1. ![Playlist-Table](docs/images/example_playlist_table.jpg)
    2. **Bonus:** You get to see my taste in Music *wink face*
-7. Select **"Analyze Playlist By Artists and Albums"**
+7. Select **"Analyze Playlist"**
    1. ![Breakdown of Playlist By Artist](docs/images/example_artist_breakdown.jpg)
    2. ![Breakdown of Playlist By Album](docs/images/example_album_breakdown.jpg)
-8. Select **"Analyze Playlist By Genre"**
-   1. Currently not implemented / debating if possible
-   2. Spotify lists multiple genres for each song, so analyzing genre's in a playlist requires judgment calls
+   3. ![Breakdown of Playlist By Genre](docs/images/example_genre_breakdown.jpg)
+
 
 ## Setup Guide
 
