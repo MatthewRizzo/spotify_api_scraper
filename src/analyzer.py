@@ -143,10 +143,8 @@ class Analyzer():
             artist_genres = Scraper.get_artist_info(artist_url, access_token)
 
             # Update the count of a given genre in the playlist
-            for cur_genre in artist_genres:
-                if cur_genre == "" or cur_genre == " ":
-                    cur_genre = constants.DEFAULT_NO_GENRE_NAME
-                cur_genre_count_in_playlist = genre_info.get(cur_genre, 0)
+            artist_track_count = analyzed_artist_dict[artist]
+            self._update_genre_count(artist_genres, genre_info, artist_track_count)
 
                 # Count the genre for the number of times this artist is in the playlist
                 cur_genre_count_in_playlist += analyzed_artist_dict[artist]
@@ -190,3 +188,18 @@ class Analyzer():
                 did_add = True
 
         return did_add
+
+    def _update_genre_count(self, artist_genres : List[str], genre_info : dict, artist_track_count : int):
+        """:brief Updates the genre count dictionary
+        \n:param `artist_genres` The list of genres a given artist is associated with
+        \n:param `artist_track_count` The number of times the artist has a track in the playlist
+        \n:param `genre_info` The genre metrics used for the chart. Gets updated in this function"""
+        # Update the count of a given genre in the playlist
+        for cur_genre in artist_genres:
+            if cur_genre == "" or cur_genre == " ":
+                cur_genre = constants.DEFAULT_NO_GENRE_NAME
+            cur_genre_count_in_playlist = genre_info.get(cur_genre, 0)
+
+            # Count the genre for the number of times this artist is in the playlist
+            cur_genre_count_in_playlist += artist_track_count
+            genre_info[cur_genre] = cur_genre_count_in_playlist
