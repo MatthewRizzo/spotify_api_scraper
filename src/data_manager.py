@@ -24,7 +24,7 @@ class DataManager():
         if self._check_if_auth_file_exists():
             pass
 
-        self._create_user_file_if_needed()
+        self._create_json_file_if_not_exist(self.expected_user_data_path)
 
     def get_auth_info(self) -> dict:
         with open(str(self.expected_auth_path)) as auth_file:
@@ -142,11 +142,11 @@ class DataManager():
         else:
             return True
 
-    def _create_user_file_if_needed(self):
-        # Create the file if it doesn't exist
-        if not os.path.exists(self.expected_user_data_path):
-            with io.open(self.expected_user_data_path, 'w') as user_file:
-                user_file.write(json.dumps({}))
+    def _create_json_file_if_not_exist(self, full_path):
+        # create the file if it doesn't exist
+        if not os.path.exists(full_path):
+            with io.open(full_path, 'w') as new_file:
+                new_file.write(json.dumps({}))
 
     def _get_user_dict(self, user_id) -> dict:
         res = None
