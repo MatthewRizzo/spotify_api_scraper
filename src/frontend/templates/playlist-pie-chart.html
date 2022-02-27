@@ -72,14 +72,14 @@
                     {% endfor %}
             ]);
 
-        var options = {
-            title: 'Playlist Breakdown By Album',
-            is3D: false,
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('playlist_by_genre_piechart'));
-        chart.draw(data, options);
+            var options = {
+                title: 'Playlist Breakdown By Album',
+                is3D: false,
             };
+
+            var chart = new google.visualization.PieChart(document.getElementById('playlist_by_genre_piechart'));
+            chart.draw(data, options);
+        };
     </script>
 </head>
 
