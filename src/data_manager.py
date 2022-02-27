@@ -13,18 +13,21 @@ import constants
 
 class DataManager():
     def __init__(self) -> None:
-        self.default_auth_filename = constants.DEFAULT_AUTH_FILENAME
-        self.expected_auth_filename = constants.EXPECTED_AUTH_FILENAME
-        self.expected_user_data_filename = constants.EXPECTED_USER_DATA_FILENAME
+        self._default_auth_filename = constants.DEFAULT_AUTH_FILENAME
+        self._expected_auth_filename = constants.EXPECTED_AUTH_FILENAME
+        self._expected_user_data_filename = constants.EXPECTED_USER_DATA_FILENAME
+        self._expected_artist_genre_filename = constants.EXPECTED_ARTIST_TO_GENRE_MAP_FILENAME
 
-        self.default_auth_path = Utils.get_data_dir_path() / self.default_auth_filename
-        self.expected_auth_path = Utils.get_data_dir_path() / self.expected_auth_filename
-        self.expected_user_data_path = Utils.get_data_dir_path() / self.expected_user_data_filename
+        self.default_auth_path = Utils.get_data_dir_path() / self._default_auth_filename
+        self.expected_auth_path = Utils.get_data_dir_path() / self._expected_auth_filename
+        self.expected_user_data_path = Utils.get_data_dir_path() / self._expected_user_data_filename
+        self.expected_artist_genre_path = Utils.get_data_dir_path() / self._expected_artist_genre_filename
 
         if not self._check_if_auth_file_exists():
             sys.exit
 
         self._create_json_file_if_not_exist(self.expected_user_data_path)
+        self._create_json_file_if_not_exist(self.expected_artist_genre_path)
 
     def get_auth_info(self) -> dict:
         with open(str(self.expected_auth_path)) as auth_file:
