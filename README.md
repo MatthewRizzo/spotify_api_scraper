@@ -1,3 +1,4 @@
+
 # spotify_api_scraper
 Utilizes Spotify's API for devs to analyze playlists and viewing habits. Personal / for fun project because I use spotify so much
 
@@ -17,11 +18,7 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
       4. Please click "Allow Access". This issue should not happen again.
       5. When ending the program please do `Ctrl+C` then respond to `Terminate batch job (Y/N)?` with `y` and click enter.
    2. **Ubuntu/Debian/Windows Git-Bash:** [start script](start.sh)
-<<<<<<< HEAD
-3. Go to [Homepage](<http://localhost:9324/>) - <http://localhost:9324/>
-=======
 3. Go to [Homepage](<http://localhost:53689/>) - <http://localhost:53689/>
->>>>>>> 7436ac52c1caef45a424aaffc5c2217acf723b7a
 4. Follow authorization prompts - sign into spotify
   1. ![auth_example](docs/images/authorization.png)
   2. Click Agree
