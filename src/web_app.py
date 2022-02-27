@@ -36,7 +36,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         UserManager.__init__(self, self._app)
         FlaskUtils.__init__(self, self._app, port)
         Scraper.__init__(self, self._is_verbose)
-        self.analyzer = Analyzer(self._is_verbose)
+        self.analyzer = Analyzer(self._is_verbose, self._data_manager)
 
         self._auth_info = self._data_manager.get_auth_info()
 

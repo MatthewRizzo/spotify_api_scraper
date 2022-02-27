@@ -5,11 +5,13 @@ from typing import List, Dict, Optional, Tuple
 import constants
 from utils import Utils
 from scraper import Scraper
+from data_manager import DataManager
 
 class Analyzer():
-    def __init__(self, is_verbose) -> None:
+    def __init__(self, is_verbose, data_mananger_obj : DataManager) -> None:
         """Class Used to analyze the data coming out of scraper in a form usable by WebApp"""
         self._is_verbose = is_verbose
+        self._data_manager = data_mananger_obj
 
     def analyze_raw_track_list(self, raw_track_list: List[Dict], access_token : str) -> Tuple[Dict, Dict, Dict]:
         """Given a list of raw track dicts from the API call itself, grabs all relevant info and does some analytics.
