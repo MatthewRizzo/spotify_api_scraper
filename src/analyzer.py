@@ -108,6 +108,8 @@ class Analyzer():
         \n:return The current album name
         """
         cur_album = str(cur_parsed_track["album"])
+        if cur_album == "" or cur_album == " ":
+            cur_album = constants.DEFAULT_NO_ALBUM_NAME
 
         cur_num_tracks_in_album = cur_album_info.get(cur_album, 0)
         cur_num_tracks_in_album += 1
