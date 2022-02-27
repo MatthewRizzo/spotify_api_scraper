@@ -24,7 +24,7 @@ class DataManager():
         self.expected_artist_genre_path = Utils.get_data_dir_path() / self._expected_artist_genre_filename
 
         if not self._check_if_auth_file_exists():
-            sys.exit
+            sys.exit()
 
         self._create_json_file_if_not_exist(self.expected_user_data_path)
         self._create_json_file_if_not_exist(self.expected_artist_genre_path)
