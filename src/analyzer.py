@@ -26,6 +26,8 @@ class Analyzer():
         analyzed_chart_data_album = {}
         analyzed_chart_data_genre = {}
 
+        existing_artist_genre_mapping = self._data_manager.get_artist_genre_mappings()
+
         artist_to_url_map = {}
 
         for raw_track in raw_track_list:
