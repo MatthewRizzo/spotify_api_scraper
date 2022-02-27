@@ -21,8 +21,8 @@ class DataManager():
         self.expected_auth_path = Utils.get_data_dir_path() / self.expected_auth_filename
         self.expected_user_data_path = Utils.get_data_dir_path() / self.expected_user_data_filename
 
-        if self._check_if_auth_file_exists():
-            pass
+        if not self._check_if_auth_file_exists():
+            sys.exit
 
         self._create_json_file_if_not_exist(self.expected_user_data_path)
 
@@ -138,7 +138,7 @@ class DataManager():
         if not pathlib.Path(self.expected_auth_path).is_file():
             print(f"Expected authorization data file not found at {self.expected_auth_path}")
             print("Please see the /README.md for details about it's creation")
-            sys.exit()
+            False
         else:
             return True
 
