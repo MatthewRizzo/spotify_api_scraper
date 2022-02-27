@@ -86,8 +86,11 @@ class Analyzer():
         lead_artist_name = lead_artist_dict["name"]
 
         # Only try to find the genres of this artist if it is not already known
-        if lead_artist_name not in existing_artist_genre_mapping.keys():
-            did_add = self._update_artist_url_map(artist_url_map, lead_artist_dict)
+        if (    lead_artist_name not in existing_artist_genre_mapping.keys()
+                and
+                lead_artist_name not in artist_url_map.keys()
+            ):
+            did_add = self._update_artist_url_map(artist_url_map, lead_artist_dict, lead_artist_name)
 
         return res_dict
 
@@ -146,23 +149,26 @@ class Analyzer():
 
         # For each artist, grab their genres from spotify and use that in metric calculations
         for artist in analyzed_artist_dict.keys():
-            if artist not in artist_to_url_map.keys():
+            if artist not in artist_to_url_map.keys() and artist not in existing_artist_genre_mapping.keys():
                 if self._is_verbose:
                     print(f"ERROR: artist {artist} does not have a spotify url to query")
                 continue
-            artist_url = artist_to_url_map[artist]
-            artist_genres = Scraper.get_artist_info(artist_url, access_token)
+
+            artist_track_count = analyzed_artist_dict[artist]
+
+            # First check if artist genres were saved locally, otherwise grab from remote
+            if artist in existing_artist_genre_mapping.keys():
+                artist_genres = existing_artist_genre_mapping[artist]
+
+            # Grab from remote
+            elif artist in artist_to_url_map.keys():
+                artist_url = artist_to_url_map[artist]
+                artist_genres = Scraper.get_artist_info(artist_url, access_token)
+                new_artist_genre_mappings.update({artist: artist_genres})
 
             # Update the count of a given genre in the playlist
-            artist_track_count = analyzed_artist_dict[artist]
             self._update_genre_count(artist_genres, genre_info, artist_track_count)
 
-            new_artist_genre_mappings.update({artist: artist_genres})
-
-        # Update the count using artists whose info is already saved locally
-        for artist, artist_genres in existing_artist_genre_mapping.items():
-            artist_track_count = analyzed_artist_dict[artist]
-            self._update_genre_count(artist_genres, genre_info, artist_track_count)
 
         self._data_manager.update_artist_genre_mappings(new_artist_genre_mappings)
 
@@ -180,27 +186,23 @@ class Analyzer():
         Utils.swap_dict_keys(analyzed_data, keys_to_escape_single)
         Utils.swap_dict_keys(analyzed_data, keys_to_escape_double)
 
-    def _update_artist_url_map(self, artist_url_map: dict, lead_artist_dict : dict) -> bool:
+    def _update_artist_url_map(self, artist_url_map: dict, lead_artist_dict : dict, lead_artist_name : str) -> bool:
         """Checks if the artist is in the artist->api url map. Adds it if it is not.
         \n:return True on artist url added, False if not added"""
-        lead_artist_name = lead_artist_dict["name"]
         did_add = False
 
-        if lead_artist_name not in artist_url_map.keys():
+        # Can't trust the given external url for then querying info about the artist
+        # Build it from base url + getting their id
+        artist_id = lead_artist_dict["id"]
 
-            # Can't trust the given external url for then querying info about the artist
-            # Build it from base url + getting their id
-            artist_id = lead_artist_dict["id"]
-
-            # Local files aren't actual artists and so they might not have id's, skip them
-            if artist_id is None:
-                if self._is_verbose:
-                    print(
-                        f"Skipping genre collection for Local File with artist {lead_artist_name}")
-            else:
-                artist_url = constants.SPOTIFY_ARTIST_BASE_URI + artist_id
-                artist_url_map[lead_artist_name] = artist_url
-                did_add = True
+        # Local files aren't actual artists and so they might not have id's, skip them
+        if artist_id is None:
+            if self._is_verbose:
+                print(f"Skipping genre collection for Local File with artist {lead_artist_name}")
+        else:
+            artist_url = constants.SPOTIFY_ARTIST_BASE_URI + artist_id
+            artist_url_map[lead_artist_name] = artist_url
+            did_add = True
 
         return did_add
 
