@@ -2,6 +2,7 @@
 data/app_auth.json
 data/user_info.json
 data/temp.*
+data/artist_genre_map.json
 
 # Venv related excludes
 Spotify-api-scrapper-venv/
