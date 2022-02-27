@@ -132,7 +132,8 @@ class Analyzer():
         # For each artist, grab their genres from spotify and use that in metric calculations
         for artist in analyzed_artist_dict.keys():
             if artist not in artist_to_url_map.keys():
-                print(f"ERROR: artist {artist} does not have a spotify url to query")
+                if self._is_verbose:
+                    print(f"ERROR: artist {artist} does not have a spotify url to query")
                 continue
             artist_url = artist_to_url_map[artist]
             artist_genres = Scraper.get_artist_info(artist_url, access_token)
