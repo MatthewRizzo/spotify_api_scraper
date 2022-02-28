@@ -103,7 +103,11 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         self.create_response_uri_pages()
         self.create_processed_data_pages()
 
-        self.base_route = f"http://localhost:{self._port}"
+        # self.base_route = f"http://localhost:{self._port}"
+        self.public_ip = "http://" + str(requests.get('https://api.ipify.org').content.decode('utf8'))
+        self.base_route = self.public_ip + ":" + str(self._port)
+        if self._is_verbose:
+            print(f"base url = {self.base_route}")
 
     def create_homepage(self):
         @self._app.route("/", methods=["GET"])
