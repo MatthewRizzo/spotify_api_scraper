@@ -26,7 +26,8 @@ from analyzer import Analyzer
 
 class WebApp(Scraper, UserManager, FlaskUtils):
     def __init__(self, port: int, is_debug: bool, data_manager: DataManager, is_verbose: bool):
-
+        self._auth_redirect_uri = None
+        
         self._title = constants.PROJECT_NAME
         self._app = Flask(self._title)
         self._data_manager = data_manager
