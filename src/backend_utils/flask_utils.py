@@ -46,7 +46,10 @@ class FlaskUtils():
         """:pre This class has been instantiated once so app and port are set
         :return the base url for this app (i.e. `http://localhost:port`"""
         base_ip = cls.get_public_ip()
-        return base_ip + str(port)
+        print(f"base_ip = {base_ip}")
+        full_base = base_ip + ":" + str(port)
+        print(f"full base_ip  = {full_base}")
+        return full_base
 
     @classmethod
     def get_public_ip(cls) -> str:
