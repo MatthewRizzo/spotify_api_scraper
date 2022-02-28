@@ -27,7 +27,7 @@ from analyzer import Analyzer
 class WebApp(Scraper, UserManager, FlaskUtils):
     def __init__(self, port: int, is_debug: bool, data_manager: DataManager, is_verbose: bool):
         self._auth_redirect_uri = None
-        
+
         self._title = constants.PROJECT_NAME
         self._app = Flask(self._title)
         self._data_manager = data_manager
@@ -99,13 +99,15 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             return refresh_wrapper
 
     def generateRoutes(self):
+        self.public_ip = FlaskUtils.get_public_ip()
+        self.base_route = FlaskUtils.get_app_base_url_str(self._port)
+        
         self.create_homepage()
         self.create_api_routes()
         self.create_response_uri_pages()
         self.create_processed_data_pages()
 
-        self.public_ip = FlaskUtils.get_public_ip()
-        self.base_route = FlaskUtils.get_app_base_url_str(self._port)
+
         if self._is_verbose:
             print(f"base url = {self.base_route}")
 
