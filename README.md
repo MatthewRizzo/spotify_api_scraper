@@ -74,11 +74,7 @@ Utilizes Spotify's API for devs to analyze playlists and viewing habits. Persona
       1. Click Edit Settings
          1. ![Edit Settings](docs/images/setup/edit_settings_button.jpg)
       2. Go to **Redirect URI's field**
-<<<<<<< HEAD
-         1. Enter `http://localhost:9324/redirect_after_auth` (see below for example)
-=======
          1. Enter `http://localhost:53689/redirect_after_auth` (see below for example)
->>>>>>> 7436ac52c1caef45a424aaffc5c2217acf723b7a
          2. ![Redirect URI's field](docs/images/setup/add_uri_callback.jpg)
       3. Type in the url EXACTLY as shown in the image **(Step 1)**
       4. Click the add button whose position is marked in the image **(Step 2)**
