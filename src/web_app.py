@@ -104,7 +104,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         self.create_processed_data_pages()
 
         self.public_ip = FlaskUtils.get_public_ip()
-        self.base_route = FlaskUtils.get_app_base_url_str()
+        self.base_route = FlaskUtils.get_app_base_url_str(self._port)
         if self._is_verbose:
             print(f"base url = {self.base_route}")
 
