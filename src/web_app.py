@@ -108,6 +108,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         if self._is_verbose:
             print(f"base url = {self.base_route}")
 
+        print(f"redirect uri = {self._auth_redirect_uri}")
+
     def create_homepage(self):
         @self._app.route("/", methods=["GET"])
         def index():
