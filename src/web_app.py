@@ -26,7 +26,6 @@ from analyzer import Analyzer
 
 class WebApp(Scraper, UserManager, FlaskUtils):
     def __init__(self, port: int, is_debug: bool, data_manager: DataManager, is_verbose: bool):
-        self._auth_redirect_uri = None
 
         self._title = constants.PROJECT_NAME
         self._app = Flask(self._title)
@@ -101,7 +100,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
     def generateRoutes(self):
         self.public_ip = FlaskUtils.get_public_ip()
         self.base_route = FlaskUtils.get_app_base_url_str(self._port)
-        
+        self._auth_redirect_uri = self.base_route + constants.REDIRECT_AFTER_AUTH_ENDPOINT
+
         self.create_homepage()
         self.create_api_routes()
         self.create_response_uri_pages()
@@ -110,8 +110,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
         if self._is_verbose:
             print(f"base url = {self.base_route}")
-
-        print(f"redirect uri = {self._auth_redirect_uri}")
+            print(f"redirect uri = {self._auth_redirect_uri}")
 
     def create_homepage(self):
         @self._app.route("/", methods=["GET"])
@@ -186,8 +185,6 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         """Used to make all routes REQUIRED by spotify to receive responses"""
         @self._app.route("/redirect_after_auth", methods=["GET"])
         def redirect_after_auth():
-            self._auth_redirect_uri = self.base_route + url_for('redirect_after_auth')
-
             # part of this auth flow:
             # https://developer.spotify.com/documentation/general/guides/authorization/code-flow/
             self.user_auth_code = request.args.get('code')
@@ -228,7 +225,6 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         def spotify_authorize():
             # only auth if needed
             if not current_user.is_authenticated or not current_user.is_active():
-                self._auth_redirect_uri = self.base_route + url_for('redirect_after_auth')
 
                 auth_url = self.get_authenticate_url(self._auth_info['client_id'], self._auth_redirect_uri)
                 return redirect(auth_url)

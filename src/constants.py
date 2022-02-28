@@ -13,6 +13,9 @@ STATIC_DIR_NAME =                       "static"
 TEMPLATE_DIR_NAME =                     "templates"
 
 
+# FLASK RELATED CONSTANTS
+REDIRECT_AFTER_AUTH_ENDPOINT =  "/redirect_after_auth"
+
 # Web Page / Display Constants
 PLAYLIST_TABLE_ARTIST_COLUMN =  "Analyze Playlist"
 DEFAULT_NO_ALBUM_NAME =         "Album Unknown"
