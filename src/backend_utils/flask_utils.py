@@ -2,6 +2,7 @@ from typing import List
 from flask import Flask, url_for
 from werkzeug.routing import Rule
 from typing import Dict
+import requests
 
 class FlaskUtils():
     app = None
@@ -41,10 +42,18 @@ class FlaskUtils():
         print("\n".join(self._get_available_uri()))
 
     @classmethod
-    def get_app_base_url_str(cls) -> str:
+    def get_app_base_url_str(cls, port : int) -> str:
         """:pre This class has been instantiated once so app and port are set
         :return the base url for this app (i.e. `http://localhost:port`"""
-        return f"http://localhost:{cls.port}"
+        base_ip = cls.get_public_ip()
+        return base_ip + str(port)
+
+    @classmethod
+    def get_public_ip(cls) -> str:
+        """Gets the public / external ip of this device"""
+        base = "http://"
+        ip_dot_notation = str(requests.get('https://api.ipify.org').content.decode('utf8'))
+        return base + ip_dot_notation
 
     def _has_no_empty_params(self, rule: Rule):
         defaults = rule.defaults if rule.defaults is not None else ()
