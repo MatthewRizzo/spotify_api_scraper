@@ -103,8 +103,6 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         self.create_response_uri_pages()
         self.create_processed_data_pages()
 
-        # self.public_ip = "http://" + str(requests.get('https://api.ipify.org').content.decode('utf8'))
-        # self.base_route = self.public_ip + ":" + str(self._port)
         self.public_ip = FlaskUtils.get_public_ip()
         self.base_route = FlaskUtils.get_app_base_url_str()
         if self._is_verbose:
