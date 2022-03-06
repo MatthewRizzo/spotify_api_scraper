@@ -13,7 +13,9 @@ class Analyzer():
         self._is_verbose = is_verbose
         self._data_manager = data_mananger_obj
 
-    def analyze_raw_track_list(self, raw_track_list: List[Dict], access_token : str) -> Tuple[Dict, Dict, Dict]:
+    def analyze_raw_track_list(self, raw_track_list:
+                            List[Dict],
+                            access_token : str) -> Tuple[Dict, Dict, Dict]:
         """Given a list of raw track dicts from the API call itself, grabs all relevant info and does some analytics.
         \n:param access_token the access token received after authentication
         \n:return a Tuple of (chart_data_artist, chart_data_album, chart_data_genre).

@@ -271,7 +271,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             if self._is_verbose:
                 print(f"playlist name = {playlist_name}")
 
-            analyzed_data_tuple = self.analyzer.analyze_raw_track_list(raw_track_list, current_user.get_access_token())
+            analyzed_data_tuple = self.analyzer.analyze_raw_track_list(raw_track_list,
+                                                                       current_user.get_access_token())
             chart_data_artist, chart_data_album, chart_data_genre = analyzed_data_tuple
 
             num_artists = len(list(chart_data_artist.keys()))
