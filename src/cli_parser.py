@@ -49,3 +49,11 @@ class CLIParser():
             dest="verbose",
             help="Set this flag to have more information get printed"
         )
+
+        self.parser.add_argument(
+            "-l", "--localhost",
+            action="store_true",
+            default=False,
+            dest="redirect_localhost",
+            help="Set this flag to have the redirect url after authroziation be localhost instead of an actual IP"
+        )

@@ -25,12 +25,13 @@ import constants
 from analyzer import Analyzer
 
 class WebApp(Scraper, UserManager, FlaskUtils):
-    def __init__(self, port: int, is_debug: bool, data_manager: DataManager, is_verbose: bool):
+    def __init__(self, port: int, is_debug: bool, data_manager: DataManager, is_verbose: bool, redirect_localhost: bool):
 
         self._title = constants.PROJECT_NAME
         self._app = Flask(self._title)
         self._data_manager = data_manager
         self._is_verbose = is_verbose
+        self._redirect_use_localhost = redirect_localhost
 
         # Create the user manager with a link to the app itself
         UserManager.__init__(self, self._app)
@@ -99,7 +100,13 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
     def generateRoutes(self):
         self.public_ip = FlaskUtils.get_public_ip()
-        self.base_route = FlaskUtils.get_app_base_url_str(self._port)
+
+        if self._redirect_use_localhost is False:
+            self.base_route = FlaskUtils.get_app_base_url_str(self._port)
+        else:
+            # when local host is used, dont give a regular ip to start the route
+            self.base_route = f"http://localhost:{self._port}"
+
         self._auth_redirect_uri = self.base_route + constants.REDIRECT_AFTER_AUTH_ENDPOINT
 
         self.create_homepage()

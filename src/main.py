@@ -17,7 +17,11 @@ class Main():
         self.args = cli_args
         self.data_parser = DataManager()
 
-        self.app = WebApp(cli_args['port'], cli_args['debugMode'], self.data_parser, cli_args['verbose'])
+        self.app = WebApp(cli_args['port'],
+                          cli_args['debugMode'],
+                          self.data_parser,
+                          cli_args['verbose'],
+                          cli_args["redirect_localhost"])
 
 
 if __name__ == "__main__":
