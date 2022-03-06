@@ -32,9 +32,7 @@
         };
 
         var artist_chart = new google.visualization.PieChart(document.getElementById('playlist_by_artist_piechart'));
-        // google.visualization.events.addListener(chart, 'select', selectHandler);
         artist_chart.draw(data, options);
-        google.visualization.events.addListener(artist_chart, 'ready', artistReadyHandler);
         return artist_chart;
       }; // end of draw artist chart
 
