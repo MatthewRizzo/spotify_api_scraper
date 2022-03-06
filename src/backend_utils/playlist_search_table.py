@@ -1,3 +1,4 @@
+from email import header
 from flask_table import Table, Col
 from flask_table.columns import LinkCol, ButtonCol
 from typing import Optional, Dict, List
@@ -15,7 +16,7 @@ class PlaylistSearchTable(Table):
     playlist_desc = Col('Playlist Description')
 
     analyze_artists = ButtonCol(
-        name=constants.PLAYLIST_TABLE_ARTIST_COLUMN,
+        name=constants.PLAYLIST_TABLE_ANALYZE_COLUMN,
         endpoint="analyze_playlist",
         url_kwargs=dict(
             playlist_id="playlist_id"
