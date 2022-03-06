@@ -26,6 +26,9 @@ class DataManager():
         if not self._check_if_auth_file_exists():
             sys.exit()
 
+        if not self._check_if_auth_file_valid():
+            sys.exit()
+
         self._create_json_file_if_not_exist(self.expected_user_data_path)
         self._create_json_file_if_not_exist(self.expected_artist_genre_path)
 
@@ -154,6 +157,31 @@ class DataManager():
             False
         else:
             return True
+
+    def _check_if_auth_file_valid(self) -> bool:
+        """:return true if the file is in the right format, false otherwise
+        \n:pre The file exists"""
+        auth_dict = {}
+        is_valid = True
+        with open(pathlib.Path(self.expected_auth_path), 'r') as auth_file:
+
+            auth_dict = json.load(auth_file)
+
+        # file should contain VALID strs for client_id and client_secret
+        # i.e. not the default values
+        is_valid &= "client_id" in auth_dict.keys()
+        if(is_valid):
+            is_valid &= auth_dict["client_id"] != constants.DEFAULT_CLIENT_ID
+        is_valid &= "client_secret" in auth_dict.keys()
+        if(is_valid):
+            is_valid &= auth_dict["client_secret"] != constants.DEFAULT_CLIENT_SECRET
+
+        if is_valid is False:
+            print(f"The format of your {self._expected_auth_filename} is incorrect")
+            print('Please be sure to have "client_id": <value>, "client_secret": <value>')
+            print(f'Where <value> is NOT the word seen in the default file {self._default_auth_filename}')
+
+        return is_valid
 
     def _create_json_file_if_not_exist(self, full_path):
         # create the file if it doesn't exist

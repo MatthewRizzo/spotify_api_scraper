@@ -62,3 +62,8 @@ DOUBLE_QUOTE_ESCAPE_SEQ = "#$%^$^&*!"
 
 # Time Related Constants
 TIME_FORMAT_STR = "%m/%d/%Y %H:%M:%S"
+
+
+# DEFAULT AUTH FILE VALUES - before user creates their own files
+DEFAULT_CLIENT_ID = "CLIENT_ID"
+DEFAULT_CLIENT_SECRET = "CLIENT_SECRET"
