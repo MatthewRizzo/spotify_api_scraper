@@ -6,15 +6,16 @@
     <meta charset="UTF-8">
     <link rel="icon" href="../static/images/music-symbol.png">
     <title>{{ title }}</title>
+    <!-- <script type="module" src="../static/js/chart.js"></script> -->
 
     <!-- Make a pie chart for artist in playlist -->
     <script type="text/javascript">
         google.charts.load("current", { packages: ["corechart"] });
-        google.charts.setOnLoadCallback(drawArtistChart);
-        google.charts.setOnLoadCallback(drawAlbumChart);
-        google.charts.setOnLoadCallback(drawGenreChart);
+        artist_chart = google.charts.setOnLoadCallback(drawArtistChart);
+        album_chart = google.charts.setOnLoadCallback(drawAlbumChart);
+        genre_chart = google.charts.setOnLoadCallback(drawGenreChart);
+
         function drawArtistChart() {
-            // hide_loading_message();
             var data = google.visualization.arrayToDataTable([
                 {% for key, value in artist_data.items()  %}
                     {% if value is string %}
@@ -30,13 +31,14 @@
             is3D: false,
         };
 
-        var chart = new google.visualization.PieChart(document.getElementById('playlist_by_artist_piechart'));
+        var artist_chart = new google.visualization.PieChart(document.getElementById('playlist_by_artist_piechart'));
         // google.visualization.events.addListener(chart, 'select', selectHandler);
-        chart.draw(data, options);
+        artist_chart.draw(data, options);
+        google.visualization.events.addListener(artist_chart, 'ready', artistReadyHandler);
+        return artist_chart;
       }; // end of draw artist chart
 
       function drawAlbumChart() {
-            // hide_loading_message();
             var data = google.visualization.arrayToDataTable([
                 {% for key, value in album_data.items() %}
                     {% if value is string %}
@@ -52,12 +54,12 @@
                 is3D: false,
             };
 
-            var chart = new google.visualization.PieChart(document.getElementById('playlist_by_album_piechart'));
-            chart.draw(data, options);
+            var album_chart = new google.visualization.PieChart(document.getElementById('playlist_by_album_piechart'));
+            album_chart.draw(data, options);
+            return album_chart;
         }; // end of draw album chart
 
         function drawGenreChart() {
-            // hide_loading_message();
             var data = google.visualization.arrayToDataTable([
                 {% for key, value in genre_data.items() %}
                     {% if value is string %}
@@ -73,32 +75,36 @@
                 is3D: false,
             };
 
-            var chart = new google.visualization.PieChart(document.getElementById('playlist_by_genre_piechart'));
-            chart.draw(data, options);
+            var genre_chart = new google.visualization.PieChart(document.getElementById('playlist_by_genre_piechart'));
+            genre_chart.draw(data, options);
+            return genre_chart;
         }; // end of draw genre chart
+
     </script>
 </head>
 
 <body>
-    <div style="margin: 10px 0 0 10px;width: 1000px">
-        <h3><b>Result of Breaking Down Playlist {{ playlist }} by Artist:</b></h3>
-        <h4>Number of Tracks: {{ num_tracks }} </h4>
-        <h4>Number of Artists: {{ num_artists }} </h4>
-        <div id="playlist_by_artist_piechart" style="width: 99%; height: 500px;"></div>
-    </div>
+    <div id="all-charts" >
+        <div style="margin: 10px 0 0 10px;width: 1000px">
+            <h3><b>Result of Breaking Down Playlist {{ playlist }} by Artist:</b></h3>
+            <h4>Number of Tracks: {{ num_tracks }} </h4>
+            <h4>Number of Artists: {{ num_artists }} </h4>
+            <div id="playlist_by_artist_piechart" style="width: 99%; height: 500px;"></div>
+        </div>
 
-    <div style="margin: 10px 0 0 10px;width: 1000px">
-        <h3><b>Result of Breaking Down Playlist {{ playlist }} by Album:</b></h3>
-        <h4>Number of Albums: {{ num_albums }} </h4>
+        <div style="margin: 10px 0 0 10px;width: 1000px">
+            <h3><b>Result of Breaking Down Playlist {{ playlist }} by Album:</b></h3>
+            <h4>Number of Albums: {{ num_albums }} </h4>
 
-        <div id="playlist_by_album_piechart" style="width: 99%; height: 500px;"></div>
-    </div>
+            <div id="playlist_by_album_piechart" style="width: 99%; height: 500px;"></div>
+        </div>
 
-    <div style="margin: 10px 0 0 10px;width: 1000px">
-        <h3><b>Result of Breaking Down Playlist {{ playlist }} by Genre:</b></h3>
-        <h4>Number of Genres: {{ num_genres }} </h4>
+        <div style="margin: 10px 0 0 10px;width: 1000px">
+            <h3><b>Result of Breaking Down Playlist {{ playlist }} by Genre:</b></h3>
+            <h4>Number of Genres: {{ num_genres }} </h4>
 
-        <div id="playlist_by_genre_piechart" style="width: 99%; height: 500px;"></div>
+            <div id="playlist_by_genre_piechart" style="width: 99%; height: 500px;"></div>
+        </div>
     </div>
 </body>
 
