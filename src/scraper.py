@@ -16,10 +16,14 @@ class Scraper():
         """
         self._is_verbose = is_verbose
 
+        # list of all currently valid states
+        self._valid_auth_state_list = []
+
     def get_authenticate_url(self, client_id : str, redirect_uri : str) -> str:
         """Start the process of Login/authenticate the user
         \n:return The url WITHOUT the actual return url. must add that manually"""
-        self._auth_state_input = str(random.random())
+        cur_state = str(random.random())
+        self._valid_auth_state_list.append(cur_state)
 
         spotify_auth_base_url = constants.SPOTIFY_AUTH_BASE_URL
         client_id_param_str = "client_id=" +  client_id
@@ -32,7 +36,8 @@ class Scraper():
         url += redirect_uri_param_str
         url += "&"
         url += response_type_param_str
-        url += f"&state={self._auth_state_input}"
+        # use the last generated state
+        url += f"&state={cur_state}"
         return url
 
     def get_access_token(self,

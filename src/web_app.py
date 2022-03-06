@@ -199,7 +199,8 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
             # TODO: get this to work
             # Stop the flow if the state does not match the input state - there is a XCF attack
-            if self._auth_state_input != state:
+            # check if this state is within the valid state list
+            if state not in self._valid_auth_state_list:
                 if self._is_verbose:
                     print("State variable's do not match....XCF in progress. Ending it.")
                 access_token, refresh_token, valid_for_sec = None, None, None
@@ -209,6 +210,9 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                                         self._auth_info['client_id'],
                                                         self._auth_info['client_secret'],
                                                         self._auth_redirect_uri)
+                # remove this state from the valid state list
+                state_idx = self._valid_auth_state_list.index(state)
+                del self._valid_auth_state_list[state_idx]
 
             if access_token is None or refresh_token is None or valid_for_sec is None:
                 print("Error getting the access token. Please try authorizing yourself again")
