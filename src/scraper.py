@@ -19,7 +19,7 @@ class Scraper():
     def get_authenticate_url(self, client_id : str, redirect_uri : str) -> str:
         """Start the process of Login/authenticate the user
         \n:return The url WITHOUT the actual return url. must add that manually"""
-        self._auth_state_input = random.random()
+        self._auth_state_input = str(random.random())
 
         spotify_auth_base_url = constants.SPOTIFY_AUTH_BASE_URL
         client_id_param_str = "client_id=" +  client_id

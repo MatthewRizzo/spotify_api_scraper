@@ -198,20 +198,23 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             state = request.args.get('state')
 
             # TODO: get this to work
-            # Stop the flow if the state does not match the input state
-            # if self._auth_state_input == state:
+            # Stop the flow if the state does not match the input state - there is a XCF attack
+            if self._auth_state_input != state:
+                if self._is_verbose:
+                    print("State variable's do not match....XCF in progress. Ending it.")
+                access_token, refresh_token, valid_for_sec = None, None, None
+            else:
+                # Can now ask for the Request Access Token
+                access_token, refresh_token, valid_for_sec = self.get_access_token(self.user_auth_code,
+                                                        self._auth_info['client_id'],
+                                                        self._auth_info['client_secret'],
+                                                        self._auth_redirect_uri)
 
-            # else:
-            #     print("State variable's do not match....XCF in progress. Ending it.")
-            # Can now ask for the Request Access Token
-            access_token, refresh_token, valid_for_sec = self.get_access_token(self.user_auth_code,
-                                                      self._auth_info['client_id'],
-                                                      self._auth_info['client_secret'],
-                                                      self._auth_redirect_uri)
             if access_token is None or refresh_token is None or valid_for_sec is None:
                 print("Error getting the access token. Please try authorizing yourself again")
                 logout_user()
                 return redirect(url_for("index", title=self._title))
+
             user_id = self.get_user_id(access_token)
 
             # Figure out when the token times out
