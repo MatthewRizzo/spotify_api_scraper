@@ -10,8 +10,11 @@
     <!-- Make a pie chart for artist in playlist -->
     <script type="text/javascript">
         google.charts.load("current", { packages: ["corechart"] });
-        google.charts.setOnLoadCallback(drawChart);
-        function drawChart() {
+        google.charts.setOnLoadCallback(drawArtistChart);
+        google.charts.setOnLoadCallback(drawAlbumChart);
+        google.charts.setOnLoadCallback(drawGenreChart);
+        function drawArtistChart() {
+            // hide_loading_message();
             var data = google.visualization.arrayToDataTable([
                 {% for key, value in artist_data.items()  %}
                     {% if value is string %}
@@ -28,15 +31,12 @@
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('playlist_by_artist_piechart'));
+        // google.visualization.events.addListener(chart, 'select', selectHandler);
         chart.draw(data, options);
-      };
-    </script>
+      }; // end of draw artist chart
 
-    <!-- Make a pie chart for album in playlist -->
-    <script type="text/javascript">
-        google.charts.load("current", { packages: ["corechart"] });
-        google.charts.setOnLoadCallback(drawChart);
-        function drawChart() {
+      function drawAlbumChart() {
+            // hide_loading_message();
             var data = google.visualization.arrayToDataTable([
                 {% for key, value in album_data.items() %}
                     {% if value is string %}
@@ -54,14 +54,10 @@
 
             var chart = new google.visualization.PieChart(document.getElementById('playlist_by_album_piechart'));
             chart.draw(data, options);
-        };
-    </script>
+        }; // end of draw album chart
 
-    <!-- Make a pie chart for genres in playlist -->
-    <script type="text/javascript">
-        google.charts.load("current", { packages: ["corechart"] });
-        google.charts.setOnLoadCallback(drawChart);
-        function drawChart() {
+        function drawGenreChart() {
+            // hide_loading_message();
             var data = google.visualization.arrayToDataTable([
                 {% for key, value in genre_data.items() %}
                     {% if value is string %}
@@ -79,7 +75,7 @@
 
             var chart = new google.visualization.PieChart(document.getElementById('playlist_by_genre_piechart'));
             chart.draw(data, options);
-        };
+        }; // end of draw genre chart
     </script>
 </head>
 
