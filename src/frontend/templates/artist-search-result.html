@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+<body>
+
+    {% block content %}
+    <h1><b>Genres of {{ artist }}:</b> {{ artist_genres }}</h1>
+
+
+
+    <div class="buttons is-centered  pt-6">
+        <a href="{{ url_for('search_artist') }}" class="button is-link">
+            Return to Artist Search
+        </a>
+    </div>
+
+    <div class="buttons is-centered ">
+        <a href="{{ url_for('index') }}" class="button is-link ">
+            Return to Main Menu
+        </a>
+    </div>
+    <div class="buttons is-centered ">
+        <a href="{{ artist_spotify_url }}" class="button is-link ">
+            Go To Artist Spotify Page
+        </a>
+    </div>
+
+    {% endblock %}
+</body>

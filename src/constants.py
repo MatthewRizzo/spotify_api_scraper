@@ -30,6 +30,7 @@ SPOTIFY_GET_PLAYLIST_URI =      "https://api.spotify.com/v1/playlists" # Can get
 SPOTIFY_GET_USER_PLAYLISTS_URI= "https://api.spotify.com/v1/me/playlists" # Gets ALL playlists of current user
 SPOTIFY_USER_PROFILE_URI =      "https://api.spotify.com/v1/me"
 SPOTIFY_ARTIST_BASE_URI =       "https://api.spotify.com/v1/artists/" # ends with their id
+SPOTIFY_ITEM_SEARCH_URI =       "https://api.spotify.com/v1/search"
 
 # API Header formats. NOTE: FILL IN "Authorization" before using them
 # Used to obtain/refresh authorizationn

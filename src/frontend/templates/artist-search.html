@@ -1,0 +1,36 @@
+
+{% extends "base.html" %}
+
+<head>
+    <link rel="icon" href="../static/images/music-symbol.png">
+    <title>{{ title }}</title>
+</head>
+
+<body>
+    {% block content %}
+
+    <h1>Please Enter The Artist To Search For:</h1>
+    <h2><b>Please note that names must match their name according to Spotify</b></h2>
+    <!-- start of search artist form -->
+    <div class="box">
+        <form action="/results/search_artist", method="post">
+            {{ artist_search_form.hidden_tag() }}
+            <div class="field">
+                <div class="control">
+                    {{ artist_search_form.artist_name.label(class="label") }}
+                    {{ artist_search_form.artist_name(class="input is-medium", placeholder="Artist Name") }}
+                    {% for error in artist_search_form.artist_name.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <p>{{ artist_search_form.submit(class="button is-block is-info is-large is-fullwidth") }}</p>
+        </form>
+    </div>
+    <!-- end of search artist form -->
+
+
+    {% endblock %}
+</body>
+
+</html>

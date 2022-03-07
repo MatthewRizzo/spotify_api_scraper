@@ -221,3 +221,39 @@ class Scraper():
             return artist_req["genres"]
         else:
             return None
+
+    @classmethod
+    def check_if_artist_exists(cls, artist_name : str, access_token : str) -> Optional[Dict]:
+        """Given an artists name, uses an item query to check if they exist.
+        \n:return None on error/doesn't exist, On exists: the entire dictionary of the artist like get_artist.
+        \n:docs Get Artist: https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artist
+        \n:docs https://developer.spotify.com/console/get-search-item/
+        \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/search """
+        res = None
+        url = constants.SPOTIFY_ITEM_SEARCH_URI
+        header = constants.SPOTIFY_AUTHORIZED_HEADER_FORMAT
+        header["Authorization"] = "Bearer " + access_token
+
+        params = {
+            "q": artist_name,
+            "type": "artist"
+        }
+
+        raw_req = requests.get(url,
+                               params=params,
+                               headers=header)
+        if (
+            raw_req.status_code != 204 and
+            raw_req.headers["content-type"].strip().startswith("application/json")
+        ):
+            item_search_res = raw_req.json()
+            if "artists" in item_search_res:
+                # If the artist exists, items will be populated
+                items = item_search_res["artists"]["items"]
+
+                # check for an exact match (ignore capitalization)
+                for item in items:
+                    if str(item["name"]).lower() == str(artist_name).lower():
+                        res = item
+                        break
+        return res

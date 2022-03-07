@@ -23,6 +23,7 @@ from backend_utils.playlist_search_table import PlaylistSearchTable, PlaylistSea
 from backend_utils.flask_utils import FlaskUtils
 import constants
 from analyzer import Analyzer
+from backend_utils.artist_search_form import ArtistSearchForm
 
 class WebApp(Scraper, UserManager, FlaskUtils):
     def __init__(self, port: int, is_debug: bool, data_manager: DataManager, is_verbose: bool, redirect_localhost: bool):
@@ -262,6 +263,16 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                    title=self._title,
                                    playlist_table=escaped_playlist_table)
 
+        @self._app.route("/search_artist", methods=["GET"])
+        @login_required
+        @self.does_need_refresh
+        def search_artist():
+            """Used to let users find the genre of any artist they enter"""
+            access_token = current_user.get_access_token()
+            return render_template("artist-search.html",
+                                   title=self._title,
+                                   artist_search_form = ArtistSearchForm(access_token))
+
         # Allow both bcause defaults to post, but when redirecting with next, use get
         @self._app.route("/analyze_playlist/<string:playlist_id>", methods=["GET", "POST"])
         @login_required
@@ -353,4 +364,40 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                    num_artists=num_artists,
                                    num_albums=num_albums,
                                    num_genres=num_genres)
+
+        @self._app.route("/results/search_artist", methods=["POST"])
+        @login_required
+        @self.does_need_refresh
+        def search_artist_results():
+            """Route to get information about the artist"""
+            access_token = current_user.get_access_token()
+            artist_search_form = ArtistSearchForm(access_token, request.form)
+
+            # validate the form
+            if artist_search_form.validate_on_submit():
+                raw_artist_genres = []
+                if "genres" in artist_search_form.artist_info:
+                    raw_artist_genres = artist_search_form.artist_info["genres"]
+                artist_genres = ", ".join(raw_artist_genres)
+
+                artist =  artist_search_form.artist_info["name"]
+
+                try:
+                    spotify_url = artist_search_form.artist_info["external_urls"]["spotify"]
+                except:
+                    spotify_url = ""
+
+                return render_template("artist-search-result.html",
+                                       title=self._title,
+                                       artist = artist,
+                                       artist_genres = artist_genres,
+                                       artist_spotify_url=spotify_url)
+            else:
+                flash("Search for Arist Failed", "is-danger")
+                # go back to the previous page via render to validation fail display message
+                return render_template("artist-search.html",
+                                       title=self._title,
+                                       artist_search_form = artist_search_form)
+
+
 
