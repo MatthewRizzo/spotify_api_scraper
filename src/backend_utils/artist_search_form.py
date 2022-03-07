@@ -27,7 +27,6 @@ class ArtistSearchForm(FlaskForm):
         artist = field.data
         errr_msg = f"The artist {artist} is invalid. "
         errr_msg += "The artist must exactly match the artist name according to spotify "
-        errr_msg += "including captialization"
 
         artist_info = Scraper.check_if_artist_exists(artist, cls._access_token)
         if artist_info is not None:
