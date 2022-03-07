@@ -194,7 +194,6 @@ class Analyzer():
 
         # For each artist, grab their genres from spotify and use that in metric calculations
         for artist in analyzed_artist_dict.keys():
-            # TODO: use a function to get this. if return none - continue
             genres_update_count_tuple = self.get_artist_genres(artist,
                                             analyzed_artist_dict,
                                             artist_to_url_map,
