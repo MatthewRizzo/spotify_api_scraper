@@ -391,7 +391,9 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                        title=self._title,
                                        artist = artist,
                                        artist_genres = artist_genres,
-                                       artist_spotify_url=spotify_url)
+                                       artist_spotify_url=spotify_url,
+                                       # pass this forward so if user goes back the form data is saved
+                                       artist_search_form=artist_search_form)
             else:
                 flash("Search for Arist Failed", "is-danger")
                 # go back to the previous page via render to validation fail display message
