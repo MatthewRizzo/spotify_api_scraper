@@ -96,6 +96,49 @@ class Analyzer():
 
         return res_dict
 
+    def get_artist_genres(self,
+                        artist : str,
+                        analyzed_artist_dict: Dict,
+                        artist_to_url_map : dict,
+                        existing_artist_genre_mapping : dict,
+                        access_token : str,
+                        new_artist_genre_mappings : dict) -> Optional[Tuple[List[str], Dict, int]]:
+        """Function to get genre information of 1 artist. \
+        Handles deciding to grab from remote vs. local data. \
+        Creates a dictionary of all genres mappings obtained from remote!
+
+        \n:param `analyzed_artist_dict` a dict representing the final analysis of artists
+        \n:param `artist_to_url_map` Maps a artist's name to their spotify API URI
+        \n:param `existing_artist_genre_mapping` - Existing map of artist_name -> genre.
+        \n:param `access_token` The token recieved on authentication from spotify
+        \n:param `artist` the name of the artist
+        \n:param `new_artist_genre_mappings`: The current dictionary of NEW artist->genre mappings
+            Will be updated as new mappings are requested from remote
+
+        \nReturn: (artist_genres, new_artist_genre_mappings, artist_track_count) OR None
+                \n\t\tWhere artist_genres = their genres in list form
+                \n\t\tWhere new_artist_genre_mappings = any new mappings which should be used to update the data file
+                \n\t\tNone - When the artist does not have a spotify url to query
+        """
+        if artist not in artist_to_url_map.keys() and artist not in existing_artist_genre_mapping.keys():
+            if self._is_verbose:
+                print(f"ERROR: artist {artist} does not have a spotify url to query")
+            return None
+
+        artist_track_count = analyzed_artist_dict[artist]
+        artist_genres = []
+
+        # First check if artist genres were saved locally, otherwise grab from remote
+        if artist in existing_artist_genre_mapping.keys():
+            artist_genres = existing_artist_genre_mapping[artist]
+
+        # Grab from remote
+        elif artist in artist_to_url_map.keys():
+            artist_url = artist_to_url_map[artist]
+            artist_genres = Scraper.get_artist_info(artist_url, access_token)
+            new_artist_genre_mappings.update({artist: artist_genres})
+        return (artist_genres, new_artist_genre_mappings, artist_track_count)
+
     def _analyze_raw_track_artists(self, cur_parsed_track: Dict, cur_artist_info : Dict) -> str:
         """:brief Given a track to analyze and the current analysis dict,\
             updates `cur_artist_info` after analyzing the current track `IN PLACE`.
@@ -151,22 +194,19 @@ class Analyzer():
 
         # For each artist, grab their genres from spotify and use that in metric calculations
         for artist in analyzed_artist_dict.keys():
-            if artist not in artist_to_url_map.keys() and artist not in existing_artist_genre_mapping.keys():
-                if self._is_verbose:
-                    print(f"ERROR: artist {artist} does not have a spotify url to query")
+            # TODO: use a function to get this. if return none - continue
+            genres_update_count_tuple = self.get_artist_genres(artist,
+                                            analyzed_artist_dict,
+                                            artist_to_url_map,
+                                            existing_artist_genre_mapping,
+                                            access_token,
+                                            new_artist_genre_mappings)
+
+            if genres_update_count_tuple is None:
                 continue
-
-            artist_track_count = analyzed_artist_dict[artist]
-
-            # First check if artist genres were saved locally, otherwise grab from remote
-            if artist in existing_artist_genre_mapping.keys():
-                artist_genres = existing_artist_genre_mapping[artist]
-
-            # Grab from remote
-            elif artist in artist_to_url_map.keys():
-                artist_url = artist_to_url_map[artist]
-                artist_genres = Scraper.get_artist_info(artist_url, access_token)
-                new_artist_genre_mappings.update({artist: artist_genres})
+            artist_genres = genres_update_count_tuple[0]
+            new_artist_genre_mappings = genres_update_count_tuple[1]
+            artist_track_count = genres_update_count_tuple[2]
 
             # Update the count of a given genre in the playlist
             self._update_genre_count(artist_genres, genre_info, artist_track_count)
