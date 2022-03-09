@@ -61,11 +61,15 @@ class Analyzer():
 
         return (analyzed_chart_data_artist, analyzed_chart_data_album, analyzed_chart_data_genre)
 
-    def parse_raw_track(self, raw_track, artist_url_map: dict, existing_artist_genre_mapping : dict) -> dict:
+    def parse_raw_track(self, raw_track,
+                        artist_url_map: dict,
+                        existing_artist_genre_mapping : dict,
+                        ignore_maps : bool = False) -> dict:
         """Given a raw track from the get-track API, returns just the information we care about
-        \n:param raw_track - the rest from the get-track API call
-        \n:param artist_url_map - Maps each artist's name to the url to query them. Modifies this `in place`
-        \n:param existing_artist_genre_mapping - Existing map of artist_name -> genre.
+        \n:param `ignore_maps` Set to True to IGNORE the url and genre maps
+        \n:param `raw_track` - the rest from the get-track API call
+        \n:param `artist_url_map` - Maps each artist's name to the url to query them. Modifies this `in place`
+        \n:param `existing_artist_genre_mapping` - Existing map of artist_name -> genre.
             Dont add to `artist_url_map` if the genre is already known
         \n:return Dict that maps track_name to other info:
             keys: {track_id: { track_name, album, artist(s) } }.
@@ -87,8 +91,11 @@ class Analyzer():
         lead_artist_dict = raw_track["artists"][0]
         lead_artist_name = lead_artist_dict["name"]
 
+        if ignore_maps is True:
+            pass
+
         # Only try to find the genres of this artist if it is not already known
-        if (    lead_artist_name not in existing_artist_genre_mapping.keys()
+        elif (    lead_artist_name not in existing_artist_genre_mapping.keys()
                 and
                 lead_artist_name not in artist_url_map.keys()
             ):
