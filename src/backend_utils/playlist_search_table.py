@@ -25,6 +25,15 @@ class PlaylistSearchTable(Table):
         button_attrs={"class": "button is-link"}
     )
 
+    display_songs = ButtonCol(
+        name=constants.PLAYLIST_TABLE_DISPLAY_SONGS_COLUMN,
+        endpoint="show_playlist_songs",
+        url_kwargs=dict(
+            playlist_id="playlist_id"
+        ),
+        button_attrs={"class": "button is-link"}
+    )
+
     border = True
     no_items = f"This user has no playlists"
 

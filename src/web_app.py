@@ -321,6 +321,30 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                     num_genres=num_genres))
 
     def create_processed_data_pages(self):
+        @self._app.route("/results/playlist_song_list", methods=["GET", "POST"])
+        @login_required
+        @self.does_need_refresh
+        def show_playlist_songs():
+            """Used to list out all the songs in a playlist for easy copying.
+            Also offers different file formats to download"""
+            playlist_id = request.args.get("playlist_id")
+            access_token = current_user.get_access_token()
+            song_from_playlist_tuple = self.get_songs_from_playlist(playlist_id, access_token)
+            unprocessed_tracks, playlist_name, num_tracks = song_from_playlist_tuple
+
+            formatted_tracks = []
+
+            for track in unprocessed_tracks:
+                # use empty dicts because we dont care about the mappings here
+                processed_track = self.analyzer.parse_raw_track(track, {}, {})
+                formatted_tracks.append(list(processed_track.values()))
+
+            # return jsonify(formatted_tracks)
+            return render_template("playlist-song-display.html",
+                                   title=self._title,
+                                   song_list = formatted_tracks)
+
+
         @self._app.route("/charts/playlist_analysis", methods=["GET"])
         @login_required
         @self.does_need_refresh
