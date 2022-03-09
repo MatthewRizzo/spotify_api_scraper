@@ -17,9 +17,10 @@ TEMPLATE_DIR_NAME =                     "templates"
 REDIRECT_AFTER_AUTH_ENDPOINT =  "/redirect_after_auth"
 
 # Web Page / Display Constants
-PLAYLIST_TABLE_ANALYZE_COLUMN =  "Analyze Playlist"
-DEFAULT_NO_ALBUM_NAME =         "Album Unknown"
-DEFAULT_NO_GENRE_NAME =         "Other Genre"
+PLAYLIST_TABLE_ANALYZE_COLUMN =         "Analyze Playlist"
+PLAYLIST_TABLE_DISPLAY_SONGS_COLUMN =   "List All Songs"
+DEFAULT_NO_ALBUM_NAME =                 "Album Unknown"
+DEFAULT_NO_GENRE_NAME =                 "Other Genre"
 
 # URL/URI Related constants
 SPOTIFY_API_BASE_URI =          "https://api.spotify.com"
