@@ -33,13 +33,13 @@ class Analyzer():
         artist_to_url_map = {}
 
         for raw_track in raw_track_list:
-            processed_track = self.parse_raw_track(raw_track, artist_to_url_map, existing_artist_genre_mapping)
+            parsed_raw_track = self.parse_raw_track(raw_track, artist_to_url_map, existing_artist_genre_mapping)
 
-            cur_track = processed_track["track_name"]
+            cur_track = parsed_raw_track["track_name"]
 
             # Perform metric calcs for each artist and album - functions update in place
-            cur_artist = self._analyze_raw_track_artists(processed_track, analyzed_chart_data_artist)
-            cur_album = self._analyze_raw_track_album(processed_track, analyzed_chart_data_album)
+            cur_artist = self._analyze_raw_track_artists(parsed_raw_track, analyzed_chart_data_artist)
+            cur_album = self._analyze_raw_track_album(parsed_raw_track, analyzed_chart_data_album)
 
             if self._is_verbose:
                 print("Track {} by {} from their {} album".format(
