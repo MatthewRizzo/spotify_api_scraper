@@ -71,8 +71,8 @@ class Analyzer():
         \n:param `artist_url_map` - Maps each artist's name to the url to query them. Modifies this `in place`
         \n:param `existing_artist_genre_mapping` - Existing map of artist_name -> genre.
             Dont add to `artist_url_map` if the genre is already known
-        \n:return Dict that maps track_name to other info:
-            keys: {track_id: { track_name, album, artist(s) } }.
+        \n:return Dict that contains info about the track:
+            keys: {track_id, track_name, album, artist(s) }.
             Note: artists will be lists, but will mostly be of length 1
         \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track
         \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artist"""
