@@ -325,7 +325,19 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         @login_required
         @self.does_need_refresh
         def show_playlist_analysis():
-            """:param data is a dictionary that contains the processed metrics"""
+            """:param data is a dictionary that contains the processed metrics
+            :data format
+                {
+                    "playlist":         <playlist_name>
+                    "num_tracks":       <num_tracks>
+                    "num_artists":      <num_artists>
+                    "num_albums":       <num_albums>
+                    "num_genres":       <num_genres>
+                    "artist_data":      <processed_artist_data>
+                    "album_data":       <processed_album_data>
+                    "genre_data":       <processed_genre_data>
+                    where processed data maps artist/album/genre to a count of occurences in the playlist
+                }"""
 
             full_data = request.args.to_dict()
             playlist = full_data["playlist"]
