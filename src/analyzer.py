@@ -146,6 +146,17 @@ class Analyzer():
             new_artist_genre_mappings.update({artist: artist_genres})
         return (artist_genres, new_artist_genre_mappings, artist_track_count)
 
+    def get_song_album_artist_from_parsed_track(self,
+                                        parsed_raw_track : dict) -> Tuple[str, str, List[str]]:
+        """Given a dictionary of a parsed raw track from `parse_raw_track`,
+        get the song name, album, and artist_list
+        :return Tuple (song_name, album, artist(s) - list)"""
+        song_name = parsed_raw_track["track_name"]
+        album = parsed_raw_track["album"]
+        artist_list = parsed_raw_track["artists"]
+        return (song_name, album, artist_list)
+
+
     def _analyze_raw_track_artists(self, cur_parsed_track: Dict, cur_artist_info : Dict) -> str:
         """:brief Given a track to analyze and the current analysis dict,\
             updates `cur_artist_info` after analyzing the current track `IN PLACE`.
