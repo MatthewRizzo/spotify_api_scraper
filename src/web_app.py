@@ -275,6 +275,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                                    artist_search_form = ArtistSearchForm(access_token))
 
         # Allow both bcause defaults to post, but when redirecting with next, use get
+        @self._app.route("/analyze_playlist/", methods=["GET", "POST"])
         @self._app.route("/analyze_playlist/<string:playlist_id>", methods=["GET", "POST"])
         @login_required
         @self.does_need_refresh
