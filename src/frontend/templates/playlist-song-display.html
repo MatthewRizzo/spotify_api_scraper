@@ -1,0 +1,22 @@
+
+{% extends "base.html" %}
+
+<head>
+    <link rel="icon" href="../static/images/music-symbol.png">
+    <title>{{ title }}</title>
+</head>
+
+<body >
+    {% block content %}
+    <div class="has-text-left">
+        <!-- Display every song in the list -->
+        {% for song_info in song_list %}
+        {{ song_info}}
+        <br>
+        {% endfor %}
+
+        {% endblock %}
+    </div>
+</body>
+
+</html>
