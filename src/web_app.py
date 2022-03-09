@@ -336,13 +336,17 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
             for track in unprocessed_tracks:
                 # use empty dicts because we dont care about the mappings here
-                processed_track = self.analyzer.parse_raw_track(track, {}, {})
-                formatted_tracks.append(list(processed_track.values()))
+                parsed_raw_track = self.analyzer.parse_raw_track(track, {}, {})
+                song, album, artist = self.analyzer.get_song_album_artist_from_parsed_track(parsed_raw_track)
+                formatted_str = "{} By {} - {}".format(song, ", ".join(artist), album)
+                formatted_tracks.append(formatted_str)
 
+            formatted_tracks.sort()
             # return jsonify(formatted_tracks)
             return render_template("playlist-song-display.html",
-                                   title=self._title,
-                                   song_list = formatted_tracks)
+                                   title="Playlist Song List",
+                                   song_list = formatted_tracks,
+                                   playlist_name=playlist_name)
 
 
         @self._app.route("/charts/playlist_analysis", methods=["GET"])

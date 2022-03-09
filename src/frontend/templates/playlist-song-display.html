@@ -8,6 +8,8 @@
 
 <body >
     {% block content %}
+    <b>
+    Song List for Playlist {{ playlist_name }}
     <div class="has-text-left">
         <!-- Display every song in the list -->
         {% for song_info in song_list %}
@@ -17,6 +19,7 @@
 
         {% endblock %}
     </div>
+    </b>
 </body>
 
 </html>
