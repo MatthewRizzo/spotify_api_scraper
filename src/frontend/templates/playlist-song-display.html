@@ -5,6 +5,7 @@
     <link rel="icon" href="../static/images/music-symbol.png">
     {% block scripts %}
     <script src="../static/js/download-playlist-songs.js"></script>
+    <script src="../static/js/extern/FileSaver-3.21.15.min.js"></script>
     {% endblock %}
     <title>{{ title }}</title>
 </head>
@@ -18,7 +19,7 @@
     <br>
 
     <b>
-    Song List for Playlist {{ playlist_name }}
+    Song List for Playlist <div id="playlist_name">{{ playlist_name }}</div>
 
     <!-- Display every song in the list -->
     <div id="song_list_display" class="has-text-left">
