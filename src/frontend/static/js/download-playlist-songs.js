@@ -1,6 +1,5 @@
 $( document ).ready(function() {
-    // document.getElementById("download_songs_txt").addEventListener("click", download_songs);
-    $("#download_songs_txt").click(download_songs);
+    $("#download_songs_txt").click(download_songs_txt);
 });
 
 /**
@@ -17,7 +16,7 @@ function make_download_file(filename, file_content)
     saveAs(blob, filename);
 }
 
-function download_songs()
+function download_songs_txt()
 {
     const song_list_el = $("#song_list_display");
     const playlist_name = $("#playlist_name").text();
