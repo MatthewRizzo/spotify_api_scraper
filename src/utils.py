@@ -2,7 +2,8 @@
 import json
 import pathlib
 from typing import Tuple, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+import time
 
 #------------------------------Project Imports-----------------------------#
 import constants
@@ -158,3 +159,19 @@ class Utils():
                 new_key = str(old_key).replace('"', double_quote_escape_seq)
                 keys_to_change_double.append((old_key, new_key))
         return (keys_to_change_single, keys_to_change_double)
+
+    @classmethod
+    def get_year_start_unix_timestamp(cls) -> float:
+        """Gets the unix timestamp corresponding to the start of the current calendar year.
+        i.e. January 1, 12:00.00 AM"""
+        current_year = date.today().year
+        month, day, hour, minute, second = 1, 1, 0, 0, 0
+        date_time_year_start = datetime(current_year, month, day, hour, minute, second)
+        unix_timestamp_year_start = time.mktime(date_time_year_start.timetuple())
+        return unix_timestamp_year_start
+
+    @classmethod
+    def get_current_unix_timestamp(cls) -> float:
+        """Gets unix epoch timestamp for the current date and time"""
+        cur_date_time = datetime.now()
+        return time.mktime(cur_date_time.timetuple())
