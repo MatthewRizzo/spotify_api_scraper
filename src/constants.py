@@ -32,22 +32,24 @@ SPOTIFY_GET_USER_PLAYLISTS_URI= "https://api.spotify.com/v1/me/playlists" # Gets
 SPOTIFY_USER_PROFILE_URI =      "https://api.spotify.com/v1/me"
 SPOTIFY_ARTIST_BASE_URI =       "https://api.spotify.com/v1/artists/" # ends with their id
 SPOTIFY_ITEM_SEARCH_URI =       "https://api.spotify.com/v1/search"
+# https://developer.spotify.com/documentation/web-api/reference/#/operations/get-recently-played
+SPOTIFY_GET_RECENT_PLAYED_URI = "https://api.spotify.com/v1/me/player/recently-played"
 
 # API Header formats. NOTE: FILL IN "Authorization" before using them
 # Used to obtain/refresh authorizationn
 SPOTIFY_GET_AUTH_HEADER_FORMAT =    {   "Content-Type": "application/x-www-form-urlencoded",
                         # auth = 'Basic ' + base64-encode(client_id:client_secret)
                                         "Authorization": None,
-
 }
 
 # Used after already authorized
 SPOTIFY_AUTHORIZED_HEADER_FORMAT = {    "Content-Type": "application/json",
                                         # auth = "Bearer " + access_token
                                         "Authorization": None,
-
-
 }
+
+# Used when requesting an access token to get these scopes as well
+SPOTIFY_SCOPES_LIST = ["user-read-recently-played"]
 
 # HTML Related Constants
 HTML_CHAR_ESCAPE_TABLE = {

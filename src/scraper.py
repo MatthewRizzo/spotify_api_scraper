@@ -30,6 +30,8 @@ class Scraper():
         redirect_uri_param_str = "redirect_uri=" + redirect_uri
         response_type_param_str = "response_type=code"
 
+        scopes = " ".join(constants.SPOTIFY_SCOPES_LIST)
+
         url = spotify_auth_base_url
         url += client_id_param_str
         url += "&"
@@ -38,6 +40,7 @@ class Scraper():
         url += response_type_param_str
         # use the last generated state
         url += f"&state={cur_state}"
+        url += f"&scope={scopes}"
         return url
 
     def get_access_token(self,
