@@ -2,7 +2,7 @@ $( document ).ready(async function() {
     track_info = await get_track_info_list();
 
     $("#download_songs_txt").click(() => {download_songs_txt(track_info)});
-    $("#download_songs_csv").click(() => {download_songs_csv(track_info)});
+    $("#download_songs_json").click(() => {download_songs_json(track_info)});
 });
 
 /**
@@ -32,7 +32,6 @@ function make_download_file(filename, file_content)
 async function get_track_info_list()
 {
     const overall_song_list_el = $("#song_list_display");
-    // const song_list_el_list = overall_song_list_el.getElementsByTagName('div');
     const song_list_el_list = overall_song_list_el.children('div');
 
     let track_json = {};
@@ -84,13 +83,28 @@ function download_songs_txt(track_info_json)
     make_download_file(filename, file_content);
 }
 
-function download_songs_json()
+/**
+ * @brief takes in a json of all the track info and puts it in a json format and saves it to a file.
+ * @param {{
+ *  id : {
+ *   song_name : String
+ *   artists : String
+ *   album : String
+ *  }
+ * }} track_info_json
+ */
+function download_songs_json(track_info_json)
 {
-    const song_list_el = $("#song_list_display");
     const playlist_name = $("#playlist_name").text();
 
-    // seperate by new lines - each song
-    let song_list = song_list_el.text().split(/\r?\n/);
+    let filename = playlist_name + ".json";
+
+    // // replace spaces with underscores
+    filename = filename.replace(/\s/g, "_");
+
+    const file_content = JSON.stringify(track_info_json);
+
+    make_download_file(filename, file_content);
 }
 
 
