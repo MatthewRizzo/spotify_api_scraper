@@ -191,8 +191,9 @@ class WebApp(Scraper, UserManager, FlaskUtils):
 
     def create_response_uri_pages(self):
         """Used to make all routes REQUIRED by spotify to receive responses"""
+        @self._app.route("/redirect_after_auth", methods=["GET"], defaults={'code': None, 'state': None})
         @self._app.route("/redirect_after_auth?code=<code>&state=<state>", methods=["GET"])
-        def redirect_after_auth():
+        def redirect_after_auth(code, state):
             # part of this auth flow:
             # https://developer.spotify.com/documentation/general/guides/authorization/code-flow/
             self.user_auth_code = request.args.get('code')
