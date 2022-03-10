@@ -29,7 +29,11 @@
     <div id="song_list_display" class="has-text-left">
         {% for id, info_dict in song_dict %}
         <!-- make hidden div of id -->
-        {{ info_dict.song_name }} By {{ info_dict.artists }} - {{ info_dict.album }}
+        <div class="is-inline" id="{{ id }}">
+            <div class="is-inline" id="song_name_{{id}}">{{ info_dict.song_name }}</div>
+            By <div class="is-inline" id="artists_{{id}}">{{ info_dict.artists }}</div>
+            - <div class="is-inline" id="album_{{id}}">{{ info_dict.album }}</div>
+        </div>
         <br>
         {% endfor %}
 
