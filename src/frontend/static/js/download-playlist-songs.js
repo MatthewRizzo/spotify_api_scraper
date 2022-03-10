@@ -1,5 +1,6 @@
 $( document ).ready(function() {
     $("#download_songs_txt").click(download_songs_txt);
+    $("#download_songs_csv").click(download_songs_json);
 });
 
 /**
@@ -37,4 +38,13 @@ function download_songs_txt()
     filename = filename.replace(/\s/g, "_");
 
     make_download_file(filename, file_content);
+}
+
+function download_songs_json()
+{
+    const song_list_el = $("#song_list_display");
+    const playlist_name = $("#playlist_name").text();
+
+    // seperate by new lines - each song
+    let song_list = song_list_el.text().split(/\r?\n/);
 }

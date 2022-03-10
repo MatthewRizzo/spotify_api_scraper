@@ -72,7 +72,7 @@ class Analyzer():
         \n:param `existing_artist_genre_mapping` - Existing map of artist_name -> genre.
             Dont add to `artist_url_map` if the genre is already known
         \n:return Dict that contains info about the track:
-            keys: {track_id, track_name, album, artist(s) }.
+            keys: {track_id, track_name, album, artists }.
             Note: artists will be lists, but will mostly be of length 1
         \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track
         \n:docs https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artist"""
@@ -147,14 +147,15 @@ class Analyzer():
         return (artist_genres, new_artist_genre_mappings, artist_track_count)
 
     def get_song_album_artist_from_parsed_track(self,
-                                        parsed_raw_track : dict) -> Tuple[str, str, List[str]]:
+                                        parsed_raw_track : dict) -> Tuple[str, str, str, List[str]]:
         """Given a dictionary of a parsed raw track from `parse_raw_track`,
-        get the song name, album, and artist_list
-        :return Tuple (song_name, album, artist(s) - list)"""
+        get the id, song name, album, and artist_list
+        :return Tuple(id, song_name, album, artists)"""
+        id =        parsed_raw_track["track_id"]
         song_name = parsed_raw_track["track_name"]
-        album = parsed_raw_track["album"]
-        artist_list = parsed_raw_track["artists"]
-        return (song_name, album, artist_list)
+        album =     parsed_raw_track["album"]
+        artists =   parsed_raw_track["artists"]
+        return (id, song_name, album, artists)
 
 
     def _analyze_raw_track_artists(self, cur_parsed_track: Dict, cur_artist_info : Dict) -> str:

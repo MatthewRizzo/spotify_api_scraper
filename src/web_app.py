@@ -332,20 +332,23 @@ class WebApp(Scraper, UserManager, FlaskUtils):
             song_from_playlist_tuple = self.get_songs_from_playlist(playlist_id, access_token)
             unprocessed_tracks, playlist_name, num_tracks = song_from_playlist_tuple
 
-            formatted_tracks = []
+            track_dict = {}
 
             for track in unprocessed_tracks:
                 # use empty dicts because we dont care about the mappings here
                 parsed_raw_track = self.analyzer.parse_raw_track(track, {}, {})
-                song, album, artist = self.analyzer.get_song_album_artist_from_parsed_track(parsed_raw_track)
-                formatted_str = "{} By {} - {}".format(song, ", ".join(artist), album)
-                formatted_tracks.append(formatted_str)
+                id, song, album, artists = self.analyzer.get_song_album_artist_from_parsed_track(parsed_raw_track)
+                track_dict[id] = {
+                    "song_name" : song,
+                    "album": album,
+                    "artists": ",".join(artists)
+                }
 
-            formatted_tracks.sort()
-            # return jsonify(formatted_tracks)
+            # converts it to tuple of (id, {song_name, album, artists})
+            track_dict_list = sorted(track_dict.items(), key = lambda item: item[1]["song_name"])
             return render_template("playlist-song-display.html",
                                    title="Playlist Song List",
-                                   song_list = formatted_tracks,
+                                   song_dict = track_dict_list,
                                    playlist_name=playlist_name)
 
 
