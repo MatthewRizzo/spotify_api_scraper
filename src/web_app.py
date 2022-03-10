@@ -341,7 +341,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
                 track_dict[id] = {
                     "song_name" : song,
                     "album": album,
-                    "artists": ",".join(artists)
+                    "artists": ", ".join(artists)
                 }
 
             # converts it to tuple of (id, {song_name, album, artists})
