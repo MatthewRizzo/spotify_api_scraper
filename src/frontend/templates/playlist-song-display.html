@@ -3,23 +3,35 @@
 
 <head>
     <link rel="icon" href="../static/images/music-symbol.png">
+    {% block scripts %}
+    <script src="../static/js/download-playlist-songs.js"></script>
+    {% endblock %}
     <title>{{ title }}</title>
 </head>
 
 <body >
     {% block content %}
+    <button id="download_songs_txt" class="button is-link">
+        Download Songs as Text File
+    </button>
+
+    <br>
+
     <b>
     Song List for Playlist {{ playlist_name }}
-    <div class="has-text-left">
-        <!-- Display every song in the list -->
+
+    <!-- Display every song in the list -->
+    <div id="song_list_display" class="has-text-left">
         {% for song_info in song_list %}
         {{ song_info}}
         <br>
         {% endfor %}
 
-        {% endblock %}
+
     </div>
     </b>
+
+    {% endblock %}
 </body>
 
 </html>
