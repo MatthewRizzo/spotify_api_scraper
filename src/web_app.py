@@ -107,6 +107,7 @@ class WebApp(Scraper, UserManager, FlaskUtils):
         else:
             # when local host is used, dont give a regular ip to start the route
             self.base_route = f"http://localhost:{self._port}"
+            print(f"Page: {self.base_route}")
 
         self._auth_redirect_uri = self.base_route + constants.REDIRECT_AFTER_AUTH_ENDPOINT
 
